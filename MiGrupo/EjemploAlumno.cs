@@ -7,6 +7,7 @@ using Microsoft.DirectX.Direct3D;
 using System.Drawing;
 using Microsoft.DirectX;
 using TgcViewer.Utils.Modifiers;
+using TgcViewer.Utils.Terrain;
 
 namespace AlumnoEjemplos.MiGrupo
 {
@@ -15,6 +16,8 @@ namespace AlumnoEjemplos.MiGrupo
     /// </summary>
     public class EjemploAlumno : TgcExample
     {
+        private TgcSkyBox skyBox;
+        
         /// <summary>
         /// Categoría a la que pertenece el ejemplo.
         /// Influye en donde se va a haber en el árbol de la derecha de la pantalla.
@@ -29,7 +32,7 @@ namespace AlumnoEjemplos.MiGrupo
         /// </summary>
         public override string getName()
         {
-            return "Grupo 99";
+            return "Grupo Jet Pilot";
         }
 
         /// <summary>
@@ -37,7 +40,7 @@ namespace AlumnoEjemplos.MiGrupo
         /// </summary>
         public override string getDescription()
         {
-            return "MiIdea - Descripcion de la idea";
+            return "Simulador de vuelo";
         }
 
         /// <summary>
@@ -98,7 +101,7 @@ namespace AlumnoEjemplos.MiGrupo
             */
 
 
-
+            /*
             ///////////////LISTAS EN C#//////////////////
             //crear
             List<string> lista = new List<string>();
@@ -121,8 +124,32 @@ namespace AlumnoEjemplos.MiGrupo
             for (int i = 0; i < lista.Count; i++)
             {
                 string element = lista[i];
-            }
+            }*/
 
+            string texturesPath = GuiController.Instance.ExamplesMediaDir + "Texturas\\Quake\\SkyBox1\\";
+
+            //Crear SkyBox 
+            skyBox = new TgcSkyBox();
+            skyBox.Center = new Vector3(0, 0, 0);
+            skyBox.Size = new Vector3(10000, 10000, 10000);
+
+            //Configurar color
+            //skyBox.Color = Color.OrangeRed;
+
+            //Configurar las texturas para cada una de las 6 caras
+            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Up, texturesPath + "phobos_up.jpg");
+            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Down, texturesPath + "phobos_dn.jpg");
+            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Left, texturesPath + "phobos_lf.jpg");
+            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Right, texturesPath + "phobos_rt.jpg");
+
+            //Hay veces es necesario invertir las texturas Front y Back si se pasa de un sistema RightHanded a uno LeftHanded
+            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Front, texturesPath + "phobos_bk.jpg");
+            skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Back, texturesPath + "phobos_ft.jpg");
+
+
+
+            //Actualizar todos los valores para crear el SkyBox
+            skyBox.updateValues();
 
         }
 
@@ -164,6 +191,7 @@ namespace AlumnoEjemplos.MiGrupo
                 //Boton izq apretado
             }
 
+            skyBox.render();
         }
 
         /// <summary>
