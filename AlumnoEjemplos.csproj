@@ -87,7 +87,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MiGrupo\EjemploAlumno.cs" />
+    <Compile Include="Jet_Pilot_Terrain\EjemploTerrain.cs" />
+    <Compile Include="Jet_Pilot_Terrain\Terrain.cs" />
+    <Compile Include="Jet_Pilot\EjemploAlumno.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
