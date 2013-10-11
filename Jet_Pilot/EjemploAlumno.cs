@@ -42,6 +42,7 @@ namespace AlumnoEjemplos.Jet_Pilot
         string currentTexture;
         float ScaleXZ_hq, ScaleXZ_mq, ScaleXZ_lq;
         float currentScaleY;
+        Colisionador colisionador;
 
         /// <summary>
         /// Categoría a la que pertenece el ejemplo.
@@ -136,6 +137,8 @@ namespace AlumnoEjemplos.Jet_Pilot
             terrain_lq = new Terrain();
             terrain_lq.loadHeightmap(currentHeightmap_lq, ScaleXZ_lq, currentScaleY, new Vector3(0, 0, 0));
             terrain_lq.loadTexture(currentTexture);
+
+            colisionador = new Colisionador(terrain_hq, ScaleXZ_hq);
 
             ///////////////USER VARS//////////////////
             /*
@@ -355,13 +358,16 @@ namespace AlumnoEjemplos.Jet_Pilot
             }
 
 
+            List<Vector3> centros_terrains_colisionables = new List<Vector3>(); 
+            //dejo esto aca, despues veo si es bueno promoverla a variable de instancia
+            
             //renderizo terrenos de alta, media y baja calidad de acuerdo a la distancia a la que se encuentren de la proyeccion de la camara en el plano xz
-
             foreach (Vector3 posicion in posiciones_centros)
             {
                 if (dist_menor_a_n_width(proy_pos_actual, posicion, 2))
                 {
                     terrain_hq.render(posicion);
+                    centros_terrains_colisionables.Add(posicion);
                     //terrain_hq.render();
                 }
                 else
@@ -379,6 +385,9 @@ namespace AlumnoEjemplos.Jet_Pilot
 
                 }
             }
+            if (colisionador.colisionar(avion, centros_terrains_colisionables))
+                avion.Position = new Vector3(0f, 495.0046f, 0f);    
+            //si choca lo vuelvo a la posicion original. y que el proximo ciclo empiece de vuelta
 
             //skyBox.render();
         }
