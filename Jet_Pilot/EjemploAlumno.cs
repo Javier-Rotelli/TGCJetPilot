@@ -321,8 +321,8 @@ namespace AlumnoEjemplos.Jet_Pilot
             avion.render();
             texto_posicion.Text = "Posicion: (" + avion.Position.X + "," + avion.Position.Y + "," + avion.Position.Z + ")";
             texto_posicion.render();
-            /*float radio = (float) GuiController.Instance.Modifiers.getValue("radioEsfera");
-            (new TgcBoundingSphere(avion.Position, radio)).render();*/
+            /*float radio = (float) GuiController.Instance.Modifiers.getValue("radioEsfera");*/
+            (new TgcBoundingSphere(avion.Position, 150f)).render();
             //Renderizar BoundingBox
             avion.BoundingBox.render();           
 
