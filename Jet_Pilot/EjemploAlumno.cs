@@ -11,6 +11,8 @@ using TgcViewer.Utils.Terrain;
 using TgcViewer.Utils.TgcSceneLoader;
 using TgcViewer.Utils.Input;
 using Microsoft.DirectX.DirectInput;
+using TgcViewer.Utils.TgcGeometry;
+using TgcViewer.Utils._2D;
 
 namespace AlumnoEjemplos.Jet_Pilot
 {
@@ -43,7 +45,7 @@ namespace AlumnoEjemplos.Jet_Pilot
         float ScaleXZ_hq, ScaleXZ_mq, ScaleXZ_lq;
         float currentScaleY;
         Colisionador colisionador;
-
+        TgcText2d texto_posicion;
         /// <summary>
         /// Categoría a la que pertenece el ejemplo.
         /// Influye en donde se va a haber en el árbol de la derecha de la pantalla.
@@ -138,7 +140,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             terrain_lq.loadHeightmap(currentHeightmap_lq, ScaleXZ_lq, currentScaleY, new Vector3(0, 0, 0));
             terrain_lq.loadTexture(currentTexture);
 
-            colisionador = new Colisionador(terrain_hq, ScaleXZ_hq);
+            colisionador = new Colisionador(terrain_hq, width, currentScaleY);
 
             ///////////////USER VARS//////////////////
             /*
@@ -153,8 +155,8 @@ namespace AlumnoEjemplos.Jet_Pilot
             ///////////////MODIFIERS//////////////////
             /*
             //Crear un modifier para un valor FLOAT
-            GuiController.Instance.Modifiers.addFloat("valorFloat", -50f, 200f, 0f);
-
+            GuiController.Instance.Modifiers.addFloat("radioEsfera", 0f, 500f, 150f);
+            /*
             //Crear un modifier para un ComboBox con opciones
             string[] opciones = new string[]{"opcion1", "opcion2", "opcion3"};
             GuiController.Instance.Modifiers.addInterval("valorIntervalo", opciones, 0);
@@ -232,22 +234,21 @@ namespace AlumnoEjemplos.Jet_Pilot
 
             //Configurar color
             //skyBox.Color = Color.OrangeRed;
-
             //Configurar las texturas para cada una de las 6 caras
             skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Up, texturesPath + "lostatseaday_up.jpg");
             skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Down, texturesPath + "lostatseaday_dn.jpg");
             skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Left, texturesPath + "lostatseaday_lf.jpg");
             skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Right, texturesPath + "lostatseaday_rt.jpg");
-
             //Hay veces es necesario invertir las texturas Front y Back si se pasa de un sistema RightHanded a uno LeftHanded
             skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Front, texturesPath + "lostatseaday_bk.jpg");
             skyBox.setFaceTexture(TgcSkyBox.SkyFaces.Back, texturesPath + "lostatseaday_ft.jpg");
-
-
-
             //Actualizar todos los valores para crear el SkyBox
             skyBox.updateValues();
 
+            //texto con la posicion del avion
+            texto_posicion = new TgcText2d();
+            texto_posicion.Align = TgcText2d.TextAlign.RIGHT;
+            texto_posicion.Position = new Point(0, 0);
         }
 
 
@@ -294,6 +295,18 @@ namespace AlumnoEjemplos.Jet_Pilot
                 move.X = speed;
                 avion.Rotation = new Vector3(0, -(float)Math.PI / 2, 0);
                 moving = true;
+            }//abajo
+            else if(d3dInput.keyDown(Key.LeftControl))
+            {
+                move.Y = -speed;
+                avion.Rotation = new Vector3(0, (float)Math.PI, 0);
+                moving = true;
+            }//arriba
+            else if (d3dInput.keyDown(Key.Space))
+            {
+                move.Y = speed;
+                avion.Rotation = new Vector3(0, (float)Math.PI, 0);
+                moving = true;
             }
 
             //Si hubo desplazamientos
@@ -306,9 +319,12 @@ namespace AlumnoEjemplos.Jet_Pilot
 
             //Renderizar modelo
             avion.render();
-
+            texto_posicion.Text = "Posicion: (" + avion.Position.X + "," + avion.Position.Y + "," + avion.Position.Z + ")";
+            texto_posicion.render();
+            /*float radio = (float) GuiController.Instance.Modifiers.getValue("radioEsfera");
+            (new TgcBoundingSphere(avion.Position, radio)).render();*/
             //Renderizar BoundingBox
-            avion.BoundingBox.render();            
+            avion.BoundingBox.render();           
 
             //Hacer que la camara siga al personaje en su nueva posicion
             GuiController.Instance.ThirdPersonCamera.Target = avion.Position;

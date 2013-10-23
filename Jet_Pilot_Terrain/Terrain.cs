@@ -16,7 +16,7 @@ namespace AlumnoEjemplos.Jet_Pilot
     /// </summary>
     public class Terrain : IRenderObject
     {
-        VertexBuffer vbTerrain;
+        public VertexBuffer vbTerrain;
         Texture terrainTexture;
         int totalVertices;
         
@@ -118,7 +118,7 @@ namespace AlumnoEjemplos.Jet_Pilot
 
             //Crear vertexBuffer
             totalVertices = 2 * 3 * (heightmapData.GetLength(0) - 1) * (heightmapData.GetLength(1) - 1);
-            vbTerrain = new VertexBuffer(typeof(CustomVertex.PositionTextured), totalVertices, d3dDevice, Usage.Dynamic | Usage.WriteOnly, CustomVertex.PositionTextured.Format, Pool.Default);
+            vbTerrain = new VertexBuffer(typeof(CustomVertex.PositionTextured), totalVertices, d3dDevice, Usage.Dynamic/* | Usage.WriteOnly*/, CustomVertex.PositionTextured.Format, Pool.Default);
 
             //Cargar vertices
             int dataIdx = 0;
