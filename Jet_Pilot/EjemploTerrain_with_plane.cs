@@ -39,7 +39,7 @@ namespace Examples.Outdoor
         
         //Estas variables se utilizan para manejar el plano en el que se encuentra la cámara y tambien para medir distancias
         Vector3 pos_original,pos_actual,proy_pos_actual,look_at_actual,normal_actual;
-        Plane plano_vision;
+        //Plane plano_vision;
         Vector3 punto_para_proy, punto_proy_en_pl, vector_final;
         
         //Muestras de terreno de alta, media y baja calidad        
@@ -75,7 +75,7 @@ namespace Examples.Outdoor
         }
 
         
-        
+        /*
         private bool esta_delante_del_plano(Plane plano_actual, Vector3 punto) {
 
             //genero un punto atras del plano que este en una linea perpendicular al mismo y que contenga al punto analizado
@@ -95,7 +95,7 @@ namespace Examples.Outdoor
             }
 
             return false;           
-        }
+        }*/
 
         private bool dist_menor_a_n_width(Vector3 pos_camara, Vector3 pos_espacio, int n) {
 
@@ -365,7 +365,7 @@ namespace Examples.Outdoor
 
             normal_actual=look_at_actual-pos_actual;
 
-            plano_vision = Plane.FromPointNormal(pos_actual, normal_actual);
+            //plano_vision = Plane.FromPointNormal(pos_actual, normal_actual);
 
             proy_pos_actual = pos_actual;
             proy_pos_actual.Y = 0;
