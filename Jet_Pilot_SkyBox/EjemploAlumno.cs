@@ -21,7 +21,7 @@ namespace AlumnoEjemplos.MiGrupo
     /// </summary>
     public class EjemploAlumno : TgcExample
     {       
-        private TgcMesh boxMesh;
+        private TgcMesh nube;
         private List<TgcMesh> meshes;
         private Texture zBufferTexture;
         private Effect effect;
@@ -32,8 +32,8 @@ namespace AlumnoEjemplos.MiGrupo
         private int altoPantalla = GuiController.Instance.Panel3d.Height;
 
         /// <summary>
-        /// Categoría a la que pertenece el ejemplo.
-        /// Influye en donde se va a haber en el árbol de la derecha de la pantalla.
+        /// Categorï¿½a a la que pertenece el ejemplo.
+        /// Influye en donde se va a haber en el ï¿½rbol de la derecha de la pantalla.
         /// </summary>
         public override string getCategory()
         {
@@ -49,7 +49,7 @@ namespace AlumnoEjemplos.MiGrupo
         }
 
         /// <summary>
-        /// Completar con la descripción del TP
+        /// Completar con la descripciï¿½n del TP
         /// </summary>
         public override string getDescription()
         {
@@ -57,8 +57,8 @@ namespace AlumnoEjemplos.MiGrupo
         }
 
         /// <summary>
-        /// Método que se llama una sola vez,  al principio cuando se ejecuta el ejemplo.
-        /// Escribir aquí todo el código de inicialización: cargar modelos, texturas, modifiers, uservars, etc.
+        /// Mï¿½todo que se llama una sola vez,  al principio cuando se ejecuta el ejemplo.
+        /// Escribir aquï¿½ todo el cï¿½digo de inicializaciï¿½n: cargar modelos, texturas, modifiers, uservars, etc.
         /// Borrar todo lo que no haga falta
         /// </summary>
         public override void init()
@@ -79,9 +79,7 @@ namespace AlumnoEjemplos.MiGrupo
             ////Configurar posicion y hacia donde se mira
             //GuiController.Instance.FpsCamera.setCamera(new Vector3(anchoPantalla / 2, altoPantalla / 2, anchoPantalla / 2), new Vector3(0, 0, 0));
 
-           // texturesPath = GuiController.Instance.ExamplesMediaDir + "Texturas\\Quake\\SkyBox LostAtSeaDay\\";
             string avionPath = GuiController.Instance.ExamplesMediaDir + "MeshCreator\\Meshes\\Vehiculos\\AvionCaza\\" + "AvionCaza-TgcScene.xml";
-            string nubesPath = GuiController.Instance.ExamplesMediaDir + "MeshCreator\\Meshes\\Objetos\\BarrilPolvora\\" + "BarrilPolvora-TgcScene.xml";
 
             //Activamos el renderizado customizado. De esta forma el framework nos delega control total sobre como dibujar en pantalla
             //La responsabilidad cae toda de nuestro lado
@@ -95,13 +93,13 @@ namespace AlumnoEjemplos.MiGrupo
             TgcScene scene = loader.loadSceneFromFile(avionPath);
 
             //cargo la mesh de la nube
-            boxMesh = loader.loadSceneFromFile(GuiController.Instance.AlumnoEjemplosMediaDir + "Jet_Pilot\\" + "Heightmaps\\" + "nube-TgcScene.xml").Meshes[0];                       
+            nube = loader.loadSceneFromFile(GuiController.Instance.AlumnoEjemplosMediaDir + "Jet_Pilot\\" + "Heightmaps\\" + "nube-TgcScene.xml").Meshes[0];                       
            
             meshes = scene.Meshes;
-            meshes.Add(boxMesh);
+            meshes.Add(nube);
             for (int i = 0; i < 8; i++)
             {
-                nubes.Add(loader.loadSceneFromFile(nubesPath).Meshes[0]);
+                nubes.Add(nube);
             }
             meshes.AddRange(nubes);
 
@@ -118,7 +116,7 @@ namespace AlumnoEjemplos.MiGrupo
                       
             //Posicionar el avion
             meshes[0].Position = new Vector3(anchoPantalla / 2, altoPantalla / 2, anchoPantalla / 2);
-            boxMesh.Position = meshes[0].Position + new Vector3(10, 0, 0);            
+            nube.Position = meshes[0].Position + new Vector3(10, 0, 0);            
 
             //Camara en tercera persona que apunta al avion
             GuiController.Instance.ThirdPersonCamera.Enable = true;
@@ -138,25 +136,25 @@ namespace AlumnoEjemplos.MiGrupo
             string[] opciones = new string[] { "opcion1", "opcion2", "opcion3" };
             GuiController.Instance.Modifiers.addInterval("valorIntervalo", opciones, 0);
 
-            ////Crear un modifier para modificar un vértice
+            ////Crear un modifier para modificar un vï¿½rtice
             GuiController.Instance.Modifiers.addVertex3f("valorVertice", new Vector3(-1000, -1000, -1000), new Vector3(5000, 5000, 5000), new Vector3((anchoPantalla / 2) - 20, (altoPantalla / 2) - 100, anchoPantalla / 2));
 
         }
 
 
         /// <summary>
-        /// Método que se llama cada vez que hay que refrescar la pantalla.
-        /// Escribir aquí todo el código referido al renderizado.
+        /// Mï¿½todo que se llama cada vez que hay que refrescar la pantalla.
+        /// Escribir aquï¿½ todo el cï¿½digo referido al renderizado.
         /// Borrar todo lo que no haga falta
         /// </summary>
-        /// <param name="elapsedTime">Tiempo en segundos transcurridos desde el último frame</param>
+        /// <param name="elapsedTime">Tiempo en segundos transcurridos desde el ï¿½ltimo frame</param>
         public override void render(float elapsedTime)
         {
 
             //Device de DirectX para renderizar
             Device d3dDevice = GuiController.Instance.D3dDevice;
 
-            //con esto la camara en 3ra persona sigue al avion y por ende el skybox lo acompaña
+            //con esto la camara en 3ra persona sigue al avion y por ende el skybox lo acompaï¿½a
             GuiController.Instance.ThirdPersonCamera.setCamera(meshes[0].Position, 20.0f, 150.0f);   
 
             //Guardar render target original
@@ -225,7 +223,7 @@ namespace AlumnoEjemplos.MiGrupo
             //nubes[0].render();
             //auto.render();
 
-            boxMesh.Position = valorVertice;
+            nube.Position = valorVertice;
 
             ///////////////INPUT//////////////////
             //conviene deshabilitar ambas camaras para que no haya interferencia
@@ -269,7 +267,7 @@ namespace AlumnoEjemplos.MiGrupo
         }
 
         /// <summary>
-        /// Método que se llama cuando termina la ejecución del ejemplo.
+        /// Mï¿½todo que se llama cuando termina la ejecuciï¿½n del ejemplo.
         /// Hacer dispose() de todos los objetos creados.
         /// </summary>
         public override void close()
@@ -279,7 +277,7 @@ namespace AlumnoEjemplos.MiGrupo
                 pOldRT.Dispose();
                 zBufferTexture.Dispose();
                 skyBox2.dispose();
-                boxMesh.dispose();
+                nube.dispose();
                 foreach (TgcMesh mesh in meshes)
                 {
                     mesh.dispose();
