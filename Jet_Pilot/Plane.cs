@@ -38,6 +38,12 @@ namespace AlumnoEjemplos.Jet_Pilot
 			Reset();
 		}
 
+        //hago el getter del avion
+        public TgcMesh getMesh()
+        {
+            return this.plane;
+        }
+
 		public void Reset()
 		{
 			pitch = 0;

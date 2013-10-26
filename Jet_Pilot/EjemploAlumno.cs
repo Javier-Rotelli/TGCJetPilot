@@ -25,10 +25,10 @@ namespace AlumnoEjemplos.Jet_Pilot
     /// </summary>
     public class Jet_Pilot : TgcExample
     {
-        
-        
-     //Variables Previas Terreno
-   
+
+
+        //Variables Previas Terreno
+
         //Width es el ancho de referencia de cada seccion de terreno. Se inicializa en init
         float width, valor_grande;
 
@@ -47,9 +47,9 @@ namespace AlumnoEjemplos.Jet_Pilot
         string currentTexture;
         float ScaleXZ_hq, ScaleXZ_mq, ScaleXZ_lq;
         float currentScaleY;
-     
 
-     //Variables Previas Avion
+
+        //Variables Previas Avion
         Vector3 CAM_DELTA = new Vector3(0, 50, 250);
         Plane player;
         FreeCam cam;
@@ -58,7 +58,7 @@ namespace AlumnoEjemplos.Jet_Pilot
 
 
 
-//Variables Previas Skybox
+        //Variables Previas Skybox
         TgcMesh nube;
         List<TgcMesh> meshes;
         Texture zBufferTexture;
@@ -104,7 +104,7 @@ namespace AlumnoEjemplos.Jet_Pilot
 
             initPlane();
             initTerrain();
-           // initSkybox();
+            initSkybox();
 
 
         }
@@ -120,9 +120,10 @@ namespace AlumnoEjemplos.Jet_Pilot
         {
 
             renderPlane(elapsedTime);
-            renderTerrain(elapsedTime);
-           // renderSkybox(elapsedTime);
 
+            renderSkybox(elapsedTime);
+
+            renderTerrain(elapsedTime);
         }
 
         /// <summary>
@@ -133,7 +134,7 @@ namespace AlumnoEjemplos.Jet_Pilot
         {
             closePlane();
             closeTerrain();
-           // closeSkybox();
+            closeSkybox();
         }
 
 
@@ -147,7 +148,7 @@ namespace AlumnoEjemplos.Jet_Pilot
 
 
 
-//Metodos para el terreno      
+        //Metodos para el terreno      
 
         private bool dist_menor_a_n_width(Vector3 pos_camara, Vector3 pos_espacio, int n)
         {
@@ -310,7 +311,7 @@ namespace AlumnoEjemplos.Jet_Pilot
 
 
             //Hay que llamar primero a initPlane para que esto funcione correctamente
-          
+
             pos_original = cam.getPosition();
             pos_original.Y = 0;
 
@@ -438,8 +439,8 @@ namespace AlumnoEjemplos.Jet_Pilot
 
 
 
-//Metodos para el avion
-        
+        //Metodos para el avion
+
         public void initPlane()
         {
 
@@ -595,7 +596,7 @@ namespace AlumnoEjemplos.Jet_Pilot
 
 
 
-//Metodos para el Skybox
+        //Metodos para el Skybox
 
         public void initSkybox()
         {
@@ -605,7 +606,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             Microsoft.DirectX.Direct3D.Device d3dDevice = GuiController.Instance.D3dDevice;
 
             //Carpeta de archivos Media del alumno
-            string alumnoMediaFolder = GuiController.Instance.AlumnoEjemplosMediaDir;
+            //   string alumnoMediaFolder = GuiController.Instance.AlumnoEjemplosMediaDir;
 
             /////////////////CONFIGURAR CAMARA PRIMERA PERSONA//////////////////
             ////Camara en primera persona, tipo videojuego FPS
@@ -615,7 +616,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             ////Configurar posicion y hacia donde se mira
             //GuiController.Instance.FpsCamera.setCamera(new Vector3(anchoPantalla / 2, altoPantalla / 2, anchoPantalla / 2), new Vector3(0, 0, 0));
 
-            string avionPath = GuiController.Instance.ExamplesMediaDir + "MeshCreator\\Meshes\\Vehiculos\\AvionCaza\\" + "AvionCaza-TgcScene.xml";
+            //  string avionPath = GuiController.Instance.ExamplesMediaDir + "MeshCreator\\Meshes\\Vehiculos\\AvionCaza\\" + "AvionCaza-TgcScene.xml";
 
             //Activamos el renderizado customizado. De esta forma el framework nos delega control total sobre como dibujar en pantalla
             //La responsabilidad cae toda de nuestro lado
@@ -626,24 +627,31 @@ namespace AlumnoEjemplos.Jet_Pilot
 
             //Cargamos un escenario
             TgcSceneLoader loader = new TgcSceneLoader();
-            TgcScene scene = loader.loadSceneFromFile(avionPath);
+            // TgcScene scene = loader.loadSceneFromFile(avionPath);
 
             //cargo la mesh de la nube
             nube = loader.loadSceneFromFile(GuiController.Instance.AlumnoEjemplosMediaDir + "Jet_Pilot\\" + "Heightmaps\\" + "nube-TgcScene.xml").Meshes[0];
 
-            meshes = scene.Meshes;
+            meshes = new List<TgcMesh>();
+            meshes.Add(player.getMesh());
             meshes.Add(nube);
+
             for (int i = 0; i < 8; i++)
             {
                 nubes.Add(nube);
             }
             meshes.AddRange(nubes);
 
-            //Le setea a todos los meshes de la scene el efecto de zbuffer
-            foreach (TgcMesh mesh in meshes)
+            for (int i = 1; i < meshes.Count; i++)
             {
-                mesh.Effect = effect;
+                meshes[i].Effect = effect;
             }
+
+            //Le setea a todos los meshes de la scene el efecto de zbuffer
+            //foreach (TgcMesh mesh in meshes)
+            //{
+            //    mesh.Effect = effect;
+            //}
 
             //Crear textura para almacenar el zBuffer. Es una textura que se usa como RenderTarget y que tiene un formato de 1 solo float de 32 bits.
             //En cada pixel no vamos a guardar un color sino el valor de Z de la escena
@@ -654,9 +662,9 @@ namespace AlumnoEjemplos.Jet_Pilot
             meshes[0].Position = new Vector3(anchoPantalla / 2, altoPantalla / 2, anchoPantalla / 2);
             nube.Position = meshes[0].Position + new Vector3(10, 0, 0);
 
-            //Camara en tercera persona que apunta al avion
-            GuiController.Instance.ThirdPersonCamera.Enable = true;
-            GuiController.Instance.ThirdPersonCamera.setCamera(meshes[0].Position, 20.0f, 150.0f);
+            ////Camara en tercera persona que apunta al avion
+            //GuiController.Instance.ThirdPersonCamera.Enable = true;
+            //GuiController.Instance.ThirdPersonCamera.setCamera(meshes[0].Position, 20.0f, 150.0f);
 
             skyBox2 = new Skybox();
 
@@ -687,8 +695,8 @@ namespace AlumnoEjemplos.Jet_Pilot
             //Device de DirectX para renderizar
             Microsoft.DirectX.Direct3D.Device d3dDevice = GuiController.Instance.D3dDevice;
 
-            //con esto la camara en 3ra persona sigue al avion y por ende el skybox lo acompa�a
-            GuiController.Instance.ThirdPersonCamera.setCamera(meshes[0].Position, 20.0f, 150.0f);
+            ////con esto la camara en 3ra persona sigue al avion y por ende el skybox lo acompa�a
+            //GuiController.Instance.ThirdPersonCamera.setCamera(meshes[0].Position, 20.0f, 150.0f);
 
             //Guardar render target original
             pOldRT = d3dDevice.GetRenderTarget(0);
@@ -702,11 +710,17 @@ namespace AlumnoEjemplos.Jet_Pilot
             d3dDevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Green, 1.0f, 0);
 
             //Render de cada mesh
-            foreach (TgcMesh mesh in meshes)
+            for (int i = 1; i < meshes.Count; i++)
             {
-                mesh.Technique = "GenerateZBuffer";
-                mesh.render();
+                meshes[i].Technique = "GenerateZBuffer";
+                meshes[i].render();
             }
+
+            //foreach (TgcMesh mesh in meshes)
+            //{
+            //    mesh.Technique = "GenerateZBuffer";
+            //    mesh.render();
+            //}
 
             zBufferSurface.Dispose();
             d3dDevice.EndScene();
@@ -725,12 +739,20 @@ namespace AlumnoEjemplos.Jet_Pilot
             effect.SetValue("texZBuffer", zBufferTexture);
             effect.SetValue("screenDimensions", new float[] { d3dDevice.Viewport.Width, d3dDevice.Viewport.Height });
 
+
             //Render de cada mesh
-            foreach (TgcMesh mesh in meshes)
+            for (int i = 1; i < meshes.Count; i++)
             {
-                mesh.Technique = "AlterColorByDepth";
-                mesh.render();
+                meshes[i].Technique = "AlterColorByDepth";
+                meshes[i].render();
             }
+
+            ////Render de cada mesh
+            //foreach (TgcMesh mesh in meshes)
+            //{
+            //    mesh.Technique = "AlterColorByDepth";
+            //    mesh.render();
+            //}
 
             d3dDevice.EndScene();
 
@@ -761,33 +783,33 @@ namespace AlumnoEjemplos.Jet_Pilot
             ///////////////INPUT//////////////////
             //conviene deshabilitar ambas camaras para que no haya interferencia
 
-            //Capturar Input teclado 
-            if (GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.DownArrow))
-            {
-                //se mueve para atras
-                meshes[0].move(new Vector3(0, 0, 500 * elapsedTime));
-            }
+            ////Capturar Input teclado 
+            //if (GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.DownArrow))
+            //{
+            //    //se mueve para atras
+            //    meshes[0].move(new Vector3(0, 0, 500 * elapsedTime));
+            //}
 
-            if (GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.UpArrow))
-            {
-                //se mueve para adelante
-                meshes[0].move(new Vector3(0, 0, -500 * elapsedTime));
+            //if (GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.UpArrow))
+            //{
+            //    //se mueve para adelante
+            //    meshes[0].move(new Vector3(0, 0, -500 * elapsedTime));
 
-            }
+            //}
 
-            if (GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.LeftArrow))
-            {
-                //rota para el costado izquierdo
-                meshes[0].rotateY(0.3f * elapsedTime);
-                //meshes[0].moveOrientedY(50 * elapsedTime);
-                //    GuiController.Instance.ThirdPersonCamera.rotateY(0.3f * elapsedTime);
-            }
+            //if (GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.LeftArrow))
+            //{
+            //    //rota para el costado izquierdo
+            //    meshes[0].rotateY(0.3f * elapsedTime);
+            //    //meshes[0].moveOrientedY(50 * elapsedTime);
+            //    //    GuiController.Instance.ThirdPersonCamera.rotateY(0.3f * elapsedTime);
+            //}
 
-            //Capturar Input Mouse
-            if (GuiController.Instance.D3dInput.buttonPressed(TgcViewer.Utils.Input.TgcD3dInput.MouseButtons.BUTTON_LEFT))
-            {
-                //Boton izq apretado               
-            }
+            ////Capturar Input Mouse
+            //if (GuiController.Instance.D3dInput.buttonPressed(TgcViewer.Utils.Input.TgcD3dInput.MouseButtons.BUTTON_LEFT))
+            //{
+            //    //Boton izq apretado               
+            //}
 
             skyBox2.renderSkybox(meshes[0].Position);
             //skyBox2.Render();
