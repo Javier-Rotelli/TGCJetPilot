@@ -320,8 +320,8 @@ namespace AlumnoEjemplos.Jet_Pilot
             float inner_width = width;
             posiciones_centros = new List<Vector3>();
 
-            pos_original.X = pos_original.X - (width * 4);
-            for (int i = 0; i < 9; i++)
+            pos_original.X = pos_original.X - (width * 9);
+            for (int i = 0; i < 18; i++)
             {
 
                 nuevo_punto = new Vector3();
@@ -329,7 +329,7 @@ namespace AlumnoEjemplos.Jet_Pilot
                 posiciones_centros.Add(nuevo_punto);
 
 
-                for (int j = 0; j < 4; j++)
+                for (int j = 0; j < 9; j++)
                 {
 
                     nuevo_punto = new Vector3();
@@ -376,9 +376,9 @@ namespace AlumnoEjemplos.Jet_Pilot
             {
                 //Esta forma de averiguar que puntos estan delante de la camara funciona, pero no resultó performante, por lo que se reemplazo la condicion del if
                 //if (esta_delante_del_plano(plano_vision, posicion))
-                if (dist_menor_a_n_width(proy_pos_actual, posicion, 5))
+                if (dist_menor_a_n_width(proy_pos_actual, posicion, 9 ))
                 {
-                    if (dist_mayor_a_n_width(proy_pos_actual, posicion, 3))
+                    if (dist_mayor_a_n_width(proy_pos_actual, posicion, 7))
                     {
                         a_revisar_para_generar.Add(posicion);
                     }
@@ -389,14 +389,16 @@ namespace AlumnoEjemplos.Jet_Pilot
                 }
             }
 
-            foreach (Vector3 posicion_a_revisar in a_revisar_para_generar)
-            {
-                generar_puntos_alrededor(posicion_a_revisar);
-            }
-
+            
             foreach (Vector3 posicion_a_borrar in a_borrar)
             {
                 posiciones_centros.Remove(posicion_a_borrar);
+            }
+
+
+            foreach (Vector3 posicion_a_revisar in a_revisar_para_generar)
+            {
+                generar_puntos_alrededor(posicion_a_revisar);
             }
 
 
@@ -811,7 +813,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             //    //Boton izq apretado               
             //}
 
-            skyBox2.renderSkybox(meshes[0].Position);
+            skyBox2.renderSkybox(cam.getLookAt());
             //skyBox2.Render();
 
             //Mostrar FPS

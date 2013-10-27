@@ -25,47 +25,47 @@ namespace AlumnoEjemplos.Jet_Pilot
 
         public Skybox()
         {
-            string skyTexPath = GuiController.Instance.ExamplesMediaDir + "Texturas\\Quake\\SkyBox LostAtSeaDay\\";
+            string skyTexPath = GuiController.Instance.AlumnoEjemplosMediaDir + "Jet_Pilot\\" + "Skybox\\";
 
             TgcTexture texture;
 
             up = new TgcPlaneWall();
-            texture = TgcTexture.createTexture(GuiController.Instance.D3dDevice, skyTexPath + "lostatseaday_up.jpg");
+            texture = TgcTexture.createTexture(GuiController.Instance.D3dDevice, skyTexPath + "up.jpg");
             up.setTexture(texture);
             up.Origin = new Vector3(-size * 0.5f, size * 0.5f, size * 0.5f);
             up.Size = new Vector3(size, size, -size);
             up.Orientation = TgcPlaneWall.Orientations.XZplane;
 
             //dn = new TgcPlaneWall();
-            //texture = TgcTexture.createTexture(GuiController.Instance.D3dDevice, skyTexPath + "lostatseaday_dn.jpg");
+            //texture = TgcTexture.createTexture(GuiController.Instance.D3dDevice, skyTexPath + "dn.jpg");
             //dn.setTexture(texture);
             //dn.Origin = new Vector3(-size * 0.5f, -size * 0.5f, -size * 0.5f);
             //dn.Size = new Vector3(size, size, size);
             //dn.Orientation = TgcPlaneWall.Orientations.XZplane;
 
             lt = new TgcPlaneWall();
-            texture = TgcTexture.createTexture(GuiController.Instance.D3dDevice, skyTexPath + "lostatseaday_bk.jpg");
+            texture = TgcTexture.createTexture(GuiController.Instance.D3dDevice, skyTexPath + "bk.jpg");
             lt.setTexture(texture);
             lt.Origin = new Vector3(size * 0.5f, -size * 0.5f, size * 0.5f);
             lt.Size = new Vector3(size, size, -size);
             lt.Orientation = TgcPlaneWall.Orientations.YZplane;
 
             rt = new TgcPlaneWall();
-            texture = TgcTexture.createTexture(GuiController.Instance.D3dDevice, skyTexPath + "lostatseaday_ft.jpg");
+            texture = TgcTexture.createTexture(GuiController.Instance.D3dDevice, skyTexPath + "ft.jpg");
             rt.setTexture(texture);
             rt.Origin = new Vector3(-size * 0.5f, -size * 0.5f, -size * 0.5f);
             rt.Size = new Vector3(size, size, size);
             rt.Orientation = TgcPlaneWall.Orientations.YZplane;
 
             ft = new TgcPlaneWall();
-            texture = TgcTexture.createTexture(GuiController.Instance.D3dDevice, skyTexPath + "lostatseaday_lf.jpg");
+            texture = TgcTexture.createTexture(GuiController.Instance.D3dDevice, skyTexPath + "lf.jpg");
             ft.setTexture(texture);
             ft.Origin = new Vector3(size * 0.5f, -size * 0.5f, -size * 0.5f);
             ft.Size = new Vector3(-size, size, size);
             ft.Orientation = TgcPlaneWall.Orientations.XYplane;
 
             bk = new TgcPlaneWall();
-            texture = TgcTexture.createTexture(GuiController.Instance.D3dDevice, skyTexPath + "lostatseaday_rt.jpg");
+            texture = TgcTexture.createTexture(GuiController.Instance.D3dDevice, skyTexPath + "rt.jpg");
             bk.setTexture(texture);
             bk.Origin = new Vector3(-size * 0.5f, -size * 0.5f, size * 0.5f);
             bk.Size = new Vector3(size, size, size);

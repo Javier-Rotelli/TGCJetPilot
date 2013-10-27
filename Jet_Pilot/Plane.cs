@@ -82,7 +82,7 @@ namespace AlumnoEjemplos.Jet_Pilot
 			{
 				velocidad_tangente += velocidad_aceleracion * acelerador * dt;
 				if (velocidad_tangente < 100.0f) velocidad_tangente = 100.0f;
-				if (velocidad_tangente > 500.0f) velocidad_tangente = 500.0f;
+				//if (velocidad_tangente > 500.0f) velocidad_tangente = 500.0f;
 			}
 
 			// La rotacion depende de cuanto este inclinado hacia los lados,
