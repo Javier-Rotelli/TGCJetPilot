@@ -33,7 +33,7 @@ namespace AlumnoEjemplos.Jet_Pilot
 			rollSpeed = 2.5f;
 			pitchSpeed = 2.0f;
 			velocidad_normal = 0.6f;
-			velocidad_aceleracion = 150.0f;
+			velocidad_aceleracion = 500.0f;
 
 			Reset();
 		}
@@ -50,7 +50,7 @@ namespace AlumnoEjemplos.Jet_Pilot
 			roll = 0;
 			acelerador = 0;
 
-			velocidad_tangente = 250.0f;
+			velocidad_tangente = 500.0f;
 
 			Matrix m = plane.Transform;
 			m = Matrix.Identity;
@@ -81,8 +81,8 @@ namespace AlumnoEjemplos.Jet_Pilot
 			if (acelerador != 0)
 			{
 				velocidad_tangente += velocidad_aceleracion * acelerador * dt;
-				if (velocidad_tangente < 100.0f) velocidad_tangente = 100.0f;
-				//if (velocidad_tangente > 500.0f) velocidad_tangente = 500.0f;
+				if (velocidad_tangente < 500.0f) velocidad_tangente = 500.0f;
+				if (velocidad_tangente > 20000.0f) velocidad_tangente = 20000.0f;
 			}
 
 			// La rotacion depende de cuanto este inclinado hacia los lados,
@@ -146,6 +146,10 @@ namespace AlumnoEjemplos.Jet_Pilot
 		{
 			velocidad_normal = s;
 		}
+
+        public void SetVelocidad_aceleracion(float new_acel) {
+            velocidad_aceleracion = new_acel; 
+        }
 
 		public void Render()
 		{
