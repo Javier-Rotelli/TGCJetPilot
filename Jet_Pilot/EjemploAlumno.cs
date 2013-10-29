@@ -69,6 +69,9 @@ namespace AlumnoEjemplos.Jet_Pilot
         int anchoPantalla = GuiController.Instance.Panel3d.Width;
         int altoPantalla = GuiController.Instance.Panel3d.Height;
 
+        //Colisiones
+        Colisionador colisionador;
+        List<Vector3> centros_terrains_colisionables;
 
         public override string getCategory()
         {
@@ -105,10 +108,9 @@ namespace AlumnoEjemplos.Jet_Pilot
             initPlane();
             initTerrain();
             initSkybox();
-
+            initColisionador();
 
         }
-
 
         /// <summary>
         /// Método que se llama cada vez que hay que refrescar la pantalla.
@@ -124,6 +126,8 @@ namespace AlumnoEjemplos.Jet_Pilot
             renderSkybox(elapsedTime);
 
             renderTerrain(elapsedTime);
+
+            //updateColision();
         }
 
         /// <summary>
@@ -403,12 +407,13 @@ namespace AlumnoEjemplos.Jet_Pilot
 
 
             //renderizo terrenos de alta, media y baja calidad de acuerdo a la distancia a la que se encuentren de la proyeccion de la camara en el plano xz
-
+            //centros_terrains_colisionables.Clear();
             foreach (Vector3 posicion in posiciones_centros)
             {
                 if (dist_menor_a_n_width(proy_pos_actual, posicion, 2))
                 {
                     terrain_hq.render(posicion);
+                    //centros_terrains_colisionables.Add(posicion);
                     //terrain_hq.render();
                 }
                 else
@@ -594,7 +599,19 @@ namespace AlumnoEjemplos.Jet_Pilot
             player.Render();
         }
 
+        //colisionador
+        private void initColisionador()
+        {
+            centros_terrains_colisionables = new List<Vector3>();
+            colisionador = new Colisionador(terrain_hq, width, currentScaleY);
+        }
 
+        private void updateColision()
+        {
+            //hago colisionar el avion
+            if (colisionador.colisionar(player.getMesh(), centros_terrains_colisionables))
+                ResetPlane();
+        }
 
 
 
