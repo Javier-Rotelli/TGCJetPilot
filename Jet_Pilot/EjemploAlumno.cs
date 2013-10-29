@@ -55,6 +55,8 @@ namespace AlumnoEjemplos.Jet_Pilot
         FreeCam cam;
         bool gameOver;
         bool reset;
+        
+        Microsoft.DirectX.Direct3D.Device d3dDevice = GuiController.Instance.D3dDevice;
 
 
 
@@ -463,6 +465,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             GuiController.Instance.Modifiers.addFloat("Velocidad de rotación", 0.5f, 1.0f, 0.6f);
             GuiController.Instance.Modifiers.addFloat("Velocidad de pitch", 1.0f, 3.0f, 2.0f);
             GuiController.Instance.Modifiers.addFloat("Velocidad de roll", 1.0f, 3.0f, 2.5f);
+            GuiController.Instance.Modifiers.addFloat("Velocidad de aceleración",0,1500.0f,500);
 
             GuiController.Instance.UserVars.addVar("Posición en X");
             GuiController.Instance.UserVars.addVar("Posición en Y");
@@ -548,9 +551,11 @@ namespace AlumnoEjemplos.Jet_Pilot
             float turnSpeed = (float)GuiController.Instance.Modifiers["Velocidad de rotación"];
             float pitchSpeed = (float)GuiController.Instance.Modifiers["Velocidad de pitch"];
             float rollSpeed = (float)GuiController.Instance.Modifiers["Velocidad de roll"];
+            float vel_acel = (float)GuiController.Instance.Modifiers["Velocidad de aceleración"];
             player.SetTurnSpeed(turnSpeed);
             player.SetPitchSpeed(pitchSpeed);
             player.SetRollSpeed(rollSpeed);
+            player.SetVelocidad_aceleracion(vel_acel);
 
         }
 
@@ -589,7 +594,8 @@ namespace AlumnoEjemplos.Jet_Pilot
 
             camera = plane + CAM_DELTA.Y * y + CAM_DELTA.Z * z;
             target = plane + CAM_DELTA.Y * y;
-            cam.SetCenterTargetUp(camera, target, y);
+            cam.SetCenterTargetUp(camera, target, y,true);      
+            cam.updateViewMatrix(d3dDevice);
 
         }
 
@@ -622,7 +628,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             //GuiController.Instance: acceso principal a todas las herramientas del Framework
 
             //Device de DirectX para crear primitivas
-            Microsoft.DirectX.Direct3D.Device d3dDevice = GuiController.Instance.D3dDevice;
+            //Microsoft.DirectX.Direct3D.Device d3dDevice = GuiController.Instance.D3dDevice;
 
             //Carpeta de archivos Media del alumno
             //   string alumnoMediaFolder = GuiController.Instance.AlumnoEjemplosMediaDir;
