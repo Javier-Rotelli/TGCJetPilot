@@ -50,7 +50,7 @@ namespace AlumnoEjemplos.Jet_Pilot
 
 
         //Variables Previas Avion
-        Vector3 CAM_DELTA = new Vector3(0, 50, 250);
+        Vector3 CAM_DELTA = new Vector3(0, 50, 500);
         Plane player;
         FreeCam cam;
         bool gameOver;
