@@ -50,7 +50,7 @@ namespace AlumnoEjemplos.Jet_Pilot
 
 
         //Variables Previas Avion
-        Vector3 CAM_DELTA = new Vector3(0, 50, 500);
+        Vector3 CAM_DELTA = new Vector3(0, 50, 350);
         Plane player;
         FreeCam cam;
         bool gameOver;
@@ -58,7 +58,11 @@ namespace AlumnoEjemplos.Jet_Pilot
         
         Microsoft.DirectX.Direct3D.Device d3dDevice = GuiController.Instance.D3dDevice;
 
-
+        bool menu_activado=false;
+        bool juego_pausado = true;
+        private TgcSprite Imagen_Menu;
+        private TgcText2d Texto_Menu;
+        //private Mp3 sound;
 
         //Variables Previas Skybox
         TgcMesh nube;
@@ -106,12 +110,52 @@ namespace AlumnoEjemplos.Jet_Pilot
         /// </summary>
         public override void init()
         {
+                initPlane();
+                initTerrain();
+                initSkybox();
+                //initColisionador();       
+        }
 
-            initPlane();
-            initTerrain();
-            initSkybox();
-            initColisionador();
+        private void Menu()
+        {
+            if (!menu_activado)
+            {
+                Imagen_Menu = new TgcSprite();
+                Imagen_Menu.Texture =
+                    TgcTexture.createTexture(GuiController.Instance.AlumnoEjemplosMediaDir +
+                                             "Jet_Pilot\\Menu\\JP1.jpg");
 
+                float factor_ancho = (float)anchoPantalla / (float)Imagen_Menu.Texture.Width;
+                float factor_alto = (float)altoPantalla / (float)Imagen_Menu.Texture.Height;
+                Imagen_Menu.Position = new Vector2(0, 0);
+                Imagen_Menu.Scaling = new Vector2(factor_ancho,factor_alto);
+                Texto_Menu = new TgcText2d();
+                Texto_Menu.Color = Color.OrangeRed;
+                Texto_Menu.Text = "Presione espacio para iniciar";
+                Texto_Menu.changeFont(new System.Drawing.Font("Times New Roman", 25.0f));
+                var textPosition = new Point(anchoPantalla/2 + (Texto_Menu.Text.Length / 2), altoPantalla/2);
+                Texto_Menu.Size = new Size(0,0);
+                Texto_Menu.Position = textPosition;
+                //sound = new Mp3("LucasArtsTribute\\Presentation\\Daytona.mp3");
+                menu_activado = true;
+            }
+            //if ((DateTime.Now - presentationDateTime).Seconds > 2)
+            //{
+            //    presentationText.Position = NewPosition();
+            //    presentationDateTime = DateTime.Now;
+            //}
+
+            GuiController.Instance.Drawer2D.beginDrawSprite();
+            Imagen_Menu.render();
+            GuiController.Instance.Drawer2D.endDrawSprite();
+            Texto_Menu.render();
+
+            //if (!sound.IsPlaying())
+            //    sound.Play();
+
+            if (GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.Space)) {
+                juego_pausado = false;
+            }
         }
 
         /// <summary>
@@ -122,14 +166,28 @@ namespace AlumnoEjemplos.Jet_Pilot
         /// <param name="elapsedTime">Tiempo en segundos transcurridos desde el último frame</param>
         public override void render(float elapsedTime)
         {
+            if (juego_pausado)
+            {
+                Menu();
+            }
+            else
+            {
+                if (GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.P))
+                {
+                    juego_pausado = true;
+                }
+                else
+                {
 
-            renderPlane(elapsedTime);
+                    renderPlane(elapsedTime);
 
-            renderSkybox(elapsedTime);
+                    renderSkybox(elapsedTime);
 
-            renderTerrain(elapsedTime);
+                    renderTerrain(elapsedTime);
 
-            //updateColision();
+                    //updateColision();
+                }
+            }
         }
 
         /// <summary>
@@ -537,13 +595,13 @@ namespace AlumnoEjemplos.Jet_Pilot
             player.SetYoke(up, down, left, right);
             player.SetThrottle(plus, minus);
 
-            bool shoot = GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.Space);
+            //bool shoot = GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.Space);
 
-            if (shoot)
-            {
-                Vector3 posIni = player.GetPosition();
-                Vector3 z = -player.ZAxis();
-            }
+            //if (shoot)
+            //{
+            //    Vector3 posIni = player.GetPosition();
+            //    Vector3 z = -player.ZAxis();
+            //}
 
 
 
