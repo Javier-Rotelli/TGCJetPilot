@@ -15,6 +15,7 @@ using TgcViewer.Utils.TgcGeometry;
 using TgcViewer.Utils._2D;
 using TgcViewer.Utils;
 using TgcViewer.Utils.Shaders;
+using TgcViewer.Utils.Sound;
 
 
 
@@ -62,7 +63,8 @@ namespace AlumnoEjemplos.Jet_Pilot
         bool juego_pausado = true;
         private TgcSprite Imagen_Menu;
         private TgcText2d Texto_Menu;
-        //private Mp3 sound;
+        private TgcMp3Player sound;
+        private TgcMp3Player motor;
 
         //Variables Previas Skybox
         TgcMesh nube;
@@ -110,6 +112,8 @@ namespace AlumnoEjemplos.Jet_Pilot
         /// </summary>
         public override void init()
         {
+
+
                 initPlane();
                 initTerrain();
                 initSkybox();
@@ -122,8 +126,8 @@ namespace AlumnoEjemplos.Jet_Pilot
             {
                 Imagen_Menu = new TgcSprite();
                 Imagen_Menu.Texture =
-                    TgcTexture.createTexture(GuiController.Instance.AlumnoEjemplosMediaDir +
-                                             "Jet_Pilot\\Menu\\JP1.jpg");
+                TgcTexture.createTexture(GuiController.Instance.AlumnoEjemplosMediaDir +
+                                         "Jet_Pilot\\Menu\\JP4.jpg");
 
                 float factor_ancho = (float)anchoPantalla / (float)Imagen_Menu.Texture.Width;
                 float factor_alto = (float)altoPantalla / (float)Imagen_Menu.Texture.Height;
@@ -133,11 +137,13 @@ namespace AlumnoEjemplos.Jet_Pilot
                 Texto_Menu.Color = Color.OrangeRed;
                 Texto_Menu.Text = "Presione espacio para iniciar";
                 Texto_Menu.changeFont(new System.Drawing.Font("Times New Roman", 25.0f));
-                var textPosition = new Point(anchoPantalla/2 + (Texto_Menu.Text.Length / 2), altoPantalla/2);
+                var textPosition = new Point(anchoPantalla/2 + (Texto_Menu.Text.Length / 2), altoPantalla*9/10);
                 Texto_Menu.Size = new Size(0,0);
                 Texto_Menu.Position = textPosition;
-                //sound = new Mp3("LucasArtsTribute\\Presentation\\Daytona.mp3");
-                menu_activado = true;
+                sound = GuiController.Instance.Mp3Player;
+                sound.FileName = GuiController.Instance.AlumnoEjemplosMediaDir +
+                "Jet_Pilot\\Sonido\\102_prologue.mp3";
+                sound.play(true);
             }
             //if ((DateTime.Now - presentationDateTime).Seconds > 2)
             //{
@@ -150,11 +156,24 @@ namespace AlumnoEjemplos.Jet_Pilot
             GuiController.Instance.Drawer2D.endDrawSprite();
             Texto_Menu.render();
 
-            //if (!sound.IsPlaying())
-            //    sound.Play();
+            if (sound.getStatus() != TgcMp3Player.States.Playing)
+            {
+                sound = GuiController.Instance.Mp3Player;
+                sound.FileName = GuiController.Instance.AlumnoEjemplosMediaDir +
+                "Jet_Pilot\\Sonido\\102_prologue.mp3";
+                sound.play(true);
+            }
+
+            menu_activado = true;
 
             if (GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.Space)) {
                 juego_pausado = false;
+                sound.stop();
+                sound.closeFile();
+                motor = GuiController.Instance.Mp3Player;
+                motor.FileName = GuiController.Instance.AlumnoEjemplosMediaDir +
+                "Jet_Pilot\\Sonido\\avion_3.mp3";
+                motor.play(true);
             }
         }
 
@@ -175,9 +194,12 @@ namespace AlumnoEjemplos.Jet_Pilot
                 if (GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.P))
                 {
                     juego_pausado = true;
+                    motor.stop();
+                    motor.closeFile();
                 }
                 else
-                {
+                {   
+
 
                     renderPlane(elapsedTime);
 
@@ -584,13 +606,13 @@ namespace AlumnoEjemplos.Jet_Pilot
                 bool enter = GuiController.Instance.D3dInput.keyPressed(Microsoft.DirectX.DirectInput.Key.Return);
             }
 
-            bool up = GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.UpArrow);
-            bool down = GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.DownArrow);
-            bool left = GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.LeftArrow);
-            bool right = GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.RightArrow);
+            bool up = GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.W);
+            bool down = GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.S);
+            bool left = GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.A);
+            bool right = GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.D);
 
-            bool plus = GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.Q);
-            bool minus = GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.A);
+            bool plus = GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.UpArrow);
+            bool minus = GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.DownArrow);
 
             player.SetYoke(up, down, left, right);
             player.SetThrottle(plus, minus);
