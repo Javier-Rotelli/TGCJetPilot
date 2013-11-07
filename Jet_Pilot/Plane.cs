@@ -29,6 +29,7 @@ namespace AlumnoEjemplos.Jet_Pilot
 			TgcSceneLoader loader = new TgcSceneLoader();
 			plane = loader.loadSceneFromFile(path).Meshes[0];
 			plane.AutoTransformEnable = false;
+            plane.setColor(Color.DarkGray);
 
 			rollSpeed = 2.5f;
 			pitchSpeed = 2.0f;
@@ -55,7 +56,7 @@ namespace AlumnoEjemplos.Jet_Pilot
 			Matrix m = plane.Transform;
 			m = Matrix.Identity;
 			plane.Transform = m;
-			SetPosition(new Vector3 (0, 1500.0f, 0));
+			SetPosition(new Vector3 (0, 500.0f, 0));
 
 			dead = false;
 		}
@@ -96,6 +97,14 @@ namespace AlumnoEjemplos.Jet_Pilot
 			plane.Transform = m;
 		}
 
+        public Vector3 Get_Center() {
+            return plane.BoundingBox.calculateBoxCenter();
+        }
+
+        public float Get_Radius() {
+            return plane.BoundingBox.calculateBoxRadius();
+        }
+ 
 
 		public void SetYoke(bool up, bool down, bool left, bool right)
 		{
@@ -151,9 +160,14 @@ namespace AlumnoEjemplos.Jet_Pilot
             velocidad_aceleracion = new_acel; 
         }
 
-		public void Render()
-		{
-		    plane.render();
+		public void Render(bool BB_activado){
+			
+            if (BB_activado)
+            {
+                plane.Position = GetPosition();
+                plane.BoundingBox.render();
+            }
+		    plane.render();      
 		}
 
 		public float GetAirSpeed()
