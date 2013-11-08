@@ -56,7 +56,7 @@ namespace AlumnoEjemplos.Jet_Pilot
 			Matrix m = plane.Transform;
 			m = Matrix.Identity;
 			plane.Transform = m;
-			SetPosition(new Vector3 (0, 500.0f, 0));
+			SetPosition(new Vector3 (0, 1000.0f, 0));
 
 			dead = false;
 		}
