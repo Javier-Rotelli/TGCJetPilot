@@ -162,9 +162,10 @@ namespace AlumnoEjemplos.Jet_Pilot
 
 		public void Render(bool BB_activado){
 			
+	    plane.BoundingBox.scaleTranslate(GetPosition(), plane.Scale);
+			
             if (BB_activado)
             {
-                plane.Position = GetPosition();
                 plane.BoundingBox.render();
             }
 		    plane.render();      
