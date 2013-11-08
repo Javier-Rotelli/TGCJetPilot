@@ -49,14 +49,14 @@ namespace AlumnoEjemplos.Jet_Pilot
         string currentTexture;
         float ScaleXZ_hq, ScaleXZ_mq, ScaleXZ_lq;
         float currentScaleY;
+        bool terreno_inicializado = false;
 
 
         //Variables Previas Avion
         Vector3 CAM_DELTA = new Vector3(0, 50, 350);
         Plane player;
         FreeCam cam;
-        bool gameOver;
-        bool reset;
+        bool avion_inicializado = false;
 
         Microsoft.DirectX.Direct3D.Device d3dDevice = GuiController.Instance.D3dDevice;
 
@@ -96,6 +96,7 @@ namespace AlumnoEjemplos.Jet_Pilot
         List<TgcMesh> nubes = new List<TgcMesh>();
         int anchoPantalla = GuiController.Instance.Panel3d.Width;
         int altoPantalla = GuiController.Instance.Panel3d.Height;
+        bool skybox_inicializado = false;
 
         //Colisiones
         //Colisionador colisionador;
@@ -216,6 +217,16 @@ namespace AlumnoEjemplos.Jet_Pilot
         }
 
 
+        private void reset() {    
+            initPlane();
+            posiciones_centros.Clear();
+            initTerrain();
+            meshes.Clear();
+            initSkybox();
+        }
+
+
+
 
         //Metodos para mostrar msjs por pantalla
         private void initMsjs() {
@@ -257,7 +268,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             Texto_Start.Color = Color.Green;
             Texto_Titulo.Color = Color.LightGray;
 
-            Texto_Start.Text = "Presione espacio para iniciar";
+            Texto_Start.Text = "Presione enter para iniciar";
             Texto_Titulo.Text = "JET PILOT";
 
             Texto_Start.changeFont(new System.Drawing.Font("Cataclysmic", 25.0f));
@@ -290,7 +301,7 @@ namespace AlumnoEjemplos.Jet_Pilot
                 sound.play(true);
             }
 
-            if (GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.Space))
+            if (GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.Return))
             {
                 juego_pausado = false;
                 sound.stop();
@@ -304,7 +315,7 @@ namespace AlumnoEjemplos.Jet_Pilot
 
             if (juego_iniciado)
             {
-                Texto_Start.Text = "Presione espacio para reanudar";
+                Texto_Start.Text = "Presione enter para reanudar";
                 if (modo_capturar_globos) {
                     render_score();
                 }
@@ -434,17 +445,16 @@ namespace AlumnoEjemplos.Jet_Pilot
         {
             Microsoft.DirectX.Direct3D.Device d3dDevice = GuiController.Instance.D3dDevice;
 
+
             //Path de Heightmap high quality del terreno
             currentHeightmap_hq = GuiController.Instance.AlumnoEjemplosMediaDir + "Jet_Pilot\\" + "Heightmaps\\" + "Heightmap_hq.jpg";
-
-
+            
             //Path de Heightmap medium quality del terreno
             currentHeightmap_mq = GuiController.Instance.AlumnoEjemplosMediaDir + "Jet_Pilot\\" + "Heightmaps\\" + "Heightmap_mq.jpg";
 
-
             //Path de Heightmap low quality del terreno
             currentHeightmap_lq = GuiController.Instance.AlumnoEjemplosMediaDir + "Jet_Pilot\\" + "Heightmaps\\" + "Heightmap_lq.jpg";
-
+            
 
 
             //Escala del mapa
@@ -458,7 +468,12 @@ namespace AlumnoEjemplos.Jet_Pilot
 
             //Path de Textura default del terreno y Modifier para cambiarla
             currentTexture = GuiController.Instance.AlumnoEjemplosMediaDir + "Jet_Pilot\\" + "Heightmaps\\" + "TerrainTexture.jpg";
-            GuiController.Instance.Modifiers.addTexture("texture", currentTexture);
+
+            if (!terreno_inicializado)
+            {
+                GuiController.Instance.Modifiers.addTexture("texture", currentTexture);
+            }
+            
 
 
             //Carga terrenos de alta,media y baja definicion: cargar heightmap y textura de color
@@ -529,6 +544,7 @@ namespace AlumnoEjemplos.Jet_Pilot
                 pos_original.X = pos_original.X + width;
             }
 
+            terreno_inicializado = true;
         }
 
 
@@ -643,34 +659,35 @@ namespace AlumnoEjemplos.Jet_Pilot
             cam.Enable = true;
             GuiController.Instance.CurrentCamera = cam;
 
-            // Crear modifiers
-            GuiController.Instance.Modifiers.addFloat("Velocidad de rotación", 0.5f, 1.0f, 0.6f);
-            GuiController.Instance.Modifiers.addFloat("Velocidad de pitch", 1.0f, 3.0f, 2.0f);
-            GuiController.Instance.Modifiers.addFloat("Velocidad de roll", 1.0f, 3.0f, 2.5f);
-            GuiController.Instance.Modifiers.addFloat("Velocidad de aceleración", 0, 1500.0f, 500);
-            GuiController.Instance.Modifiers.addBoolean("Modo capturar calaveras", "Activado", false);
-            GuiController.Instance.Modifiers.addBoolean("BoundingBox Avión", "Activado", false);
-            GuiController.Instance.Modifiers.addBoolean("BoundingBox Calaveras", "Activado", false);
-            GuiController.Instance.Modifiers.addInt("Cantidad de objetivos",0,100,10);
 
-            // Crear UserVars
-            GuiController.Instance.UserVars.addVar("Posición en X");
-            GuiController.Instance.UserVars.addVar("Posición en Y");
-            GuiController.Instance.UserVars.addVar("Posición en Z");
+            if (!avion_inicializado)
+            {
+                // Crear modifiers
+                GuiController.Instance.Modifiers.addFloat("Velocidad de rotación", 0.5f, 1.0f, 0.6f);
+                GuiController.Instance.Modifiers.addFloat("Velocidad de pitch", 1.0f, 3.0f, 2.0f);
+                GuiController.Instance.Modifiers.addFloat("Velocidad de roll", 1.0f, 3.0f, 2.5f);
+                GuiController.Instance.Modifiers.addFloat("Velocidad de aceleración", 0, 1500.0f, 500);
+                GuiController.Instance.Modifiers.addBoolean("Modo capturar calaveras", "Activado", false);
+                GuiController.Instance.Modifiers.addBoolean("BoundingBox Avión", "Activado", false);
+                GuiController.Instance.Modifiers.addBoolean("BoundingBox Calaveras", "Activado", false);
+                GuiController.Instance.Modifiers.addInt("Cantidad de objetivos", 0, 100, 10);
 
-            GuiController.Instance.UserVars.addVar("Avión respecto a X");
-            GuiController.Instance.UserVars.addVar("Avión respecto a Y");
-            GuiController.Instance.UserVars.addVar("Avión respecto a Z");
+                // Crear UserVars
+                GuiController.Instance.UserVars.addVar("Posición en X");
+                GuiController.Instance.UserVars.addVar("Posición en Y");
+                GuiController.Instance.UserVars.addVar("Posición en Z");
 
+                GuiController.Instance.UserVars.addVar("Avión respecto a X");
+                GuiController.Instance.UserVars.addVar("Avión respecto a Y");
+                GuiController.Instance.UserVars.addVar("Avión respecto a Z");
+            }
+
+            avion_inicializado = true;
             ResetPlane();
         }
 
         void ResetPlane()
         {
-            gameOver = false;
-
-            reset = false;
-
             player.Reset();
 
             // Extraigo los ejes del avion de su matriz transformación
@@ -705,19 +722,19 @@ namespace AlumnoEjemplos.Jet_Pilot
         /// <param name="dt">Tiempo desde la última ejecución</param>
         public void CheckInput(float dt)
         {
-            if (!gameOver)
-            {
-                // El menu se activa solo al chocar, y no se puede salir, solo resetear
-                bool enter = GuiController.Instance.D3dInput.keyPressed(Microsoft.DirectX.DirectInput.Key.Return);
-            }
+            
+            
+            // El menu se activa solo al chocar, y no se puede salir, solo resetear
+            bool enter = GuiController.Instance.D3dInput.keyPressed(Microsoft.DirectX.DirectInput.Key.Return);
+            
 
             bool up = GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.W);
             bool down = GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.S);
             bool left = GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.A);
             bool right = GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.D);
 
-            bool plus = GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.UpArrow);
-            bool minus = GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.DownArrow);
+            bool plus = GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.Space);
+            bool minus = GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.RightControl);
 
             player.SetYoke(up, down, left, right);
             player.SetThrottle(plus, minus);
@@ -750,13 +767,6 @@ namespace AlumnoEjemplos.Jet_Pilot
         /// <param name="dt">Tiempo desde la última ejecución</param>
         public void UpdatePlane(float dt)
         {
-            // Comando de resetear el juego
-            if (reset)
-            {
-                ResetPlane();
-                return;
-            }
-
             // Control de saltos en casos de bajo rendimiento y pérdida del foco
             if (dt > 0.1f) dt = 0.1f;
 
@@ -836,7 +846,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             {
                 mostrar_msj = true;
                 hora_choque = DateTime.Now;
-                player.Reset();
+                reset();
                 //System.Threading.Thread.Sleep(200);
             }
 
@@ -920,16 +930,20 @@ namespace AlumnoEjemplos.Jet_Pilot
 
             ///////////////MODIFIERS//////////////////
 
-            ////Crear un modifier para un valor FLOAT
-            GuiController.Instance.Modifiers.addFloat("valorFloat", -50f, 200f, 0f);
+            if (!skybox_inicializado)
+            {
+                ////Crear un modifier para un valor FLOAT
+                GuiController.Instance.Modifiers.addFloat("valorFloat", -50f, 200f, 0f);
 
-            ////Crear un modifier para un ComboBox con opciones
-            string[] opciones = new string[] { "opcion1", "opcion2", "opcion3" };
-            GuiController.Instance.Modifiers.addInterval("valorIntervalo", opciones, 0);
+                ////Crear un modifier para un ComboBox con opciones
+                string[] opciones = new string[] { "opcion1", "opcion2", "opcion3" };
+                GuiController.Instance.Modifiers.addInterval("valorIntervalo", opciones, 0);
 
-            ////Crear un modifier para modificar un v�rtice
-            GuiController.Instance.Modifiers.addVertex3f("valorVertice", new Vector3(-1000, -1000, -1000), new Vector3(5000, 5000, 5000), new Vector3((anchoPantalla / 2) - 20, (altoPantalla / 2) - 100, anchoPantalla / 2));
+                ////Crear un modifier para modificar un v�rtice
+                GuiController.Instance.Modifiers.addVertex3f("valorVertice", new Vector3(-1000, -1000, -1000), new Vector3(5000, 5000, 5000), new Vector3((anchoPantalla / 2) - 20, (altoPantalla / 2) - 100, anchoPantalla / 2));
+            }
 
+            skybox_inicializado = true;
         }
 
         /// </summary>
