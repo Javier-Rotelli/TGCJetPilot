@@ -70,6 +70,13 @@ namespace AlumnoEjemplos.Jet_Pilot
         private TgcMp3Player sound;
         private TgcMp3Player motor;
 
+        //Varibles de mensajes por pantalla
+        private TgcText2d Msj_Choque;
+        private TgcText2d Msj_Triunfo;
+        DateTime hora_choque;
+        DateTime hora_trunfo;
+        bool mostrar_msj = false;
+
         //Variables del modo cazar globos
         bool modo_capturar_globos = false;
         private float Score = 0;
@@ -91,10 +98,12 @@ namespace AlumnoEjemplos.Jet_Pilot
         int altoPantalla = GuiController.Instance.Panel3d.Height;
 
         //Colisiones
-        Colisionador colisionador;
-        List<Vector3> centros_terrains_colisionables;
+        //Colisionador colisionador;
+        float[] altura_terrenos;
 
+        
 
+            
 
         //Metodos principales
 
@@ -133,6 +142,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             initTerrain();
             initSkybox();
             initColisionador();
+            initMsjs();
         }
 
         /// <summary>
@@ -167,10 +177,32 @@ namespace AlumnoEjemplos.Jet_Pilot
                         render_score();
                         renderGlobos(elapsedTime);
                     }
-                    //updateColision();
+
+                    updateColision();
+
+                    if (mostrar_msj)
+                    {
+                        if (DateTime.Now.Subtract(hora_choque).Seconds <= 2)
+                        {
+                            Msj_Choque.render();
+                        }
+                        else
+                        {
+
+                            if (DateTime.Now.Subtract(hora_trunfo).Seconds <= 2)
+                            {
+                                Msj_Triunfo.render();
+                            }
+                            else
+                            {
+                                mostrar_msj = false;
+                            }
+                        }
+                    }
                 }
             }
         }
+        
 
         /// <summary>
         /// Método que se llama cuando termina la ejecución del ejemplo.
@@ -181,6 +213,24 @@ namespace AlumnoEjemplos.Jet_Pilot
             closePlane();
             closeTerrain();
             closeSkybox();
+        }
+
+
+
+        //Metodos para mostrar msjs por pantalla
+        private void initMsjs() {
+
+            Msj_Choque = new TgcText2d();
+            Msj_Choque.Text = "Guarda con el terreno capo!!";
+            Msj_Choque.Position = new Point((int)player.GetPosition().X, altoPantalla / 3);
+            Msj_Choque.Color = Color.DarkCyan;
+            Msj_Choque.changeFont(new System.Drawing.Font("Cataclysmic", 30.0f));
+
+            Msj_Triunfo = new TgcText2d();
+            Msj_Triunfo.Text = "Felicitaciones has capturado todas las calaveras!!";
+            Msj_Triunfo.Position = new Point((int)player.GetPosition().X, altoPantalla / 3);
+            Msj_Triunfo.Color = Color.DarkCyan;
+            Msj_Triunfo.changeFont(new System.Drawing.Font("Cataclysmic", 30.0f));
         }
 
 
@@ -535,12 +585,18 @@ namespace AlumnoEjemplos.Jet_Pilot
 
             //renderizo terrenos de alta, media y baja calidad de acuerdo a la distancia a la que se encuentren de la proyeccion de la camara en el plano xz
             //centros_terrains_colisionables.Clear();
+            int i = 0;
             foreach (Vector3 posicion in posiciones_centros)
             {
                 if (dist_menor_a_n_width(proy_pos_actual, posicion, 2))
                 {
                     terrain_hq.render(posicion);
-                    //centros_terrains_colisionables.Add(posicion);
+
+                    if (i <= 8)
+                    {
+                        altura_terrenos.SetValue(posicion.Y, i);
+                    }
+                    i += 1;
                     //terrain_hq.render();
                 }
                 else
@@ -741,20 +797,50 @@ namespace AlumnoEjemplos.Jet_Pilot
 
         //colisionador
 
-        private void initColisionador()
-        {
-            centros_terrains_colisionables = new List<Vector3>();
-            colisionador = new Colisionador(terrain_hq, width, currentScaleY);
+        //private void initColisionador()
+        //{
+        //    centros_terrains_colisionables = new List<Vector3>();
+        //    colisionador = new Colisionador(terrain_hq, width, currentScaleY);
+        //}
+
+        //private void updateColision()
+        //{
+        //    //hago colisionar el avion
+        //    if (colisionador.colisionar(player.getMesh(), centros_terrains_colisionables))
+        //        ResetPlane();
+        //}
+
+
+        private void initColisionador() {
+            altura_terrenos = new float[9];
         }
 
-        private void updateColision()
-        {
-            //hago colisionar el avion
-            if (colisionador.colisionar(player.getMesh(), centros_terrains_colisionables))
-                ResetPlane();
+        private void updateColision(){
+
+            bool choca = false;
+
+            foreach (float altura in altura_terrenos)
+            {
+                float umbral = 300;
+                choca = false;
+
+                Vector3 pos_avion = player.GetPosition();
+
+                if ((pos_avion.Y - altura) <= umbral){
+                    choca = true;
+                    break;
+                }
+            } 
+
+            if (choca)
+            {
+                mostrar_msj = true;
+                hora_choque = DateTime.Now;
+                player.Reset();
+                //System.Threading.Thread.Sleep(200);
+            }
+
         }
-
-
 
 
         //Metodos para el Skybox
@@ -1006,15 +1092,15 @@ namespace AlumnoEjemplos.Jet_Pilot
         //Métodos para generación, renderizado, colisión y eliminación de globos
 
         public void initGlobos(){ /*Cargar Mesh de objetivo*/
-        
             String path = GuiController.Instance.ExamplesMediaDir + @"MeshCreator\Meshes\Esqueletos\Calabera\Calabera-TgcScene.xml";
             TgcSceneLoader loader = new TgcSceneLoader();
             Globo = loader.loadSceneFromFile(path).Meshes[0];
-            Globo.Scale = new Vector3(4, 4, 4);
+            Globo.Scale = new Vector3(3, 3, 3);
             generarGlobos();
         }
 
-        public void renderGlobos(float elapsedTime){/*Envía los Globos a renderizar*/
+        public void renderGlobos(float elapsedTime)
+        {/*Envía los Globos a renderizar*/
 
             Vector3 centro_globo;
             Vector3 centro_avion = player.Get_Center();
@@ -1037,6 +1123,12 @@ namespace AlumnoEjemplos.Jet_Pilot
                     {
                         quitarGlobo(i);
                         Score = Score + 1;
+
+                        if (Score == cantidad_globos) { //Si completé el nivel debo mostrar msj de felicitaciones
+                            hora_trunfo = DateTime.Now;
+                            mostrar_msj = true;
+                        }
+
                     }
                     else //No colisiona, entonces lo dibujo
                     {
@@ -1086,8 +1178,8 @@ namespace AlumnoEjemplos.Jet_Pilot
             }
         }
 
-        private void quitarGlobo(int index){/*Elimino un globo ya capturado*/
-        
+        private void quitarGlobo(int index)
+        {/*Elimino un globo ya capturado*/
             Array.Clear(objetivos, index, 1);
         }
 
