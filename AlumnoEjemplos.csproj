@@ -88,6 +88,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Jet_Pilot\Colisionador.cs" />
+    <Compile Include="Jet_Pilot\VertexFuego.cs" />
     <Compile Include="Jet_Pilot\FreeCam.cs" />
     <Compile Include="Jet_Pilot\Plane.cs" />
     <Compile Include="Jet_Pilot\SkyBox.cs" />
@@ -119,7 +120,57 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Jet_Pilot\Fire.fx" />
+    <None Include="AlumnoMedia\Jet_Pilot\Heightmaps\Textures\Thumbs.db" />
+    <None Include="AlumnoMedia\Jet_Pilot\Heightmaps\Thumbs.db" />
+    <None Include="AlumnoMedia\Jet_Pilot\Menu\Thumbs.db" />
+    <None Include="AlumnoMedia\Jet_Pilot\fuego\Fire.fx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="AlumnoMedia\Jet_Pilot\caza\caza-TgcScene.xml" />
+    <Content Include="AlumnoMedia\Jet_Pilot\caza\Textures\fighter.bmp" />
+    <Content Include="AlumnoMedia\Jet_Pilot\caza\Textures\FireBase.bmp" />
+    <Content Include="AlumnoMedia\Jet_Pilot\fuego\FireBase.bmp" />
+    <Content Include="AlumnoMedia\Jet_Pilot\fuego\FireDistortion.bmp" />
+    <Content Include="AlumnoMedia\Jet_Pilot\fuego\FireOpacity.bmp" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Heightmaps\Heightmap_hq.jpg" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Heightmaps\Heightmap_lq.jpg" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Heightmaps\Heightmap_mq.jpg" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Heightmaps\nube-TgcScene.xml" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Heightmaps\nube.png" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Heightmaps\TerrainTexture.jpg" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Heightmaps\Textures\ae_cloud_alpha.png" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Heightmaps\Textures\nube.png" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Menu\145092__aircraft-ship-sky-clouds-lights_p.jpg" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Menu\248360__military-aircraft-aviation-sky-pilot-pilot-cockpit-helmet-wallpapers_p.jpg" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Menu\433827_0.JPG" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Menu\AR-5-Mk-III..jpg" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Menu\default-ehow-images-a07-du-3k-do-train-fighter-jet-pilot-800x800.jpg" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Menu\ef2000_typhoon-wide.jpg" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Menu\fighter-jet-pilot-cockpit-hd-wallpaper-700x393.jpg" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Menu\f_15e_strike_eagle_pops_flares-wide.jpg" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Menu\f_15_eagles_fly_over_the_pacific_ocean-wide.jpg" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Menu\f_15_eagle_moves_into_position-wide.jpg" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Menu\f_16_fighting_falcon_air_base_iraq-wide.jpg" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Menu\IMAGEN-9052945-1.jpg" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Menu\images.jpg" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Menu\Jet_SS_105213152_0820131-617x416.jpg" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Menu\JP1.jpg" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Menu\JP2.jpg" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Menu\JP3.jpg" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Menu\JP4.jpg" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Menu\JP5.jpg" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Menu\JP6.jpg" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Menu\JP7.jpg" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Menu\JP8.jpg" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Menu\un_spacy_fighter-HD.jpg" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Skybox\bk.jpg" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Skybox\dn.jpg" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Skybox\ft.jpg" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Skybox\lf.jpg" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Skybox\rt.jpg" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Skybox\up.jpg" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Sonido\102_prologue.mp3" />
+    <Content Include="AlumnoMedia\Jet_Pilot\Sonido\avion_3.mp3" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

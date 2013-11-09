@@ -1,5 +1,3 @@
-string Fire_Effects_Fire_Single_Pass_ScreenAlignedQuad : ModelData = "..\\..\\..\\Program Files (x86)\\AMD\\RenderMonkey 1.82\\Examples\\Media\\Models\\ScreenAlignedQuad.3ds";
-
 float4 layer_speed = float4( 0.69, 0.52, 0.75, 1.00 );
 float time_0_X : Time0_X;
 
@@ -12,7 +10,7 @@ struct VS_OUTPUT
    float3 TexCoord3 : TEXCOORD3;
 };
 
-VS_OUTPUT Fire_Effects_Fire_Single_Pass_Vertex_Shader_main (float4 vPosition: POSITION, float3 vTexCoord0 : TEXCOORD0)
+VS_OUTPUT vs_main_fire (float4 vPosition: POSITION, float3 vTexCoord0 : TEXCOORD0)
 {
    VS_OUTPUT Out = (VS_OUTPUT) 0; 
 
@@ -40,43 +38,13 @@ VS_OUTPUT Fire_Effects_Fire_Single_Pass_Vertex_Shader_main (float4 vPosition: PO
 
 
 
-float distortion_amount2
-<
-   string UIName = "distortion_amount2";
-   string UIWidget = "Numeric";
-   bool UIVisible =  false;
-   float UIMin = -1.00;
-   float UIMax = 1.00;
-> = float( 0.07 );
-float4 height_attenuation
-<
-   string UIName = "height_attenuation";
-   string UIWidget = "Direction";
-   bool UIVisible =  false;
-   float4 UIMin = float4( -10.00, -10.00, -10.00, -10.00 );
-   float4 UIMax = float4( 10.00, 10.00, 10.00, 10.00 );
-   bool Normalize =  false;
-> = float4( 0.44, 0.29, 0.00, 1.00 );
-float distortion_amount1
-<
-   string UIName = "distortion_amount1";
-   string UIWidget = "Numeric";
-   bool UIVisible =  false;
-   float UIMin = -1.00;
-   float UIMax = 1.00;
-> = float( 0.09 );
-float distortion_amount0
-<
-   string UIName = "distortion_amount0";
-   string UIWidget = "Numeric";
-   bool UIVisible =  false;
-   float UIMin = -1.00;
-   float UIMax = 1.00;
-> = float( 0.12 );
-texture fire_base_Tex
-<
-   string ResourceName = "..\\..\\..\\Program Files (x86)\\AMD\\RenderMonkey 1.82\\Examples\\Media\\Textures\\FireBase.tga";
->;
+float distortion_amount2 = float( 0.07 );
+float4 height_attenuation = float4( 0.44, 0.29, 0.00, 1.00 );
+float distortion_amount1 = float( 0.09 );
+float distortion_amount0 = float( 0.12 );
+
+texture fire_base_Tex;
+
 sampler fire_base = sampler_state
 {
    Texture = (fire_base_Tex);
@@ -87,10 +55,8 @@ sampler fire_base = sampler_state
    MIPFILTER = LINEAR;
    ADDRESSW = CLAMP;
 };
-texture fire_distortion_Tex
-<
-   string ResourceName = "..\\..\\..\\Program Files (x86)\\AMD\\RenderMonkey 1.82\\Examples\\Media\\Textures\\FireDistortion.tga";
->;
+
+texture fire_distortion_Tex;
 sampler fire_distortion = sampler_state
 {
    Texture = (fire_distortion_Tex);
@@ -101,10 +67,8 @@ sampler fire_distortion = sampler_state
    MIPFILTER = LINEAR;
    ADDRESSW = WRAP;
 };
-texture fire_opacity_Tex
-<
-   string ResourceName = "..\\..\\..\\Program Files (x86)\\AMD\\RenderMonkey 1.82\\Examples\\Media\\Textures\\FireOpacity.tga";
->;
+
+texture fire_opacity_Tex;
 sampler fire_opacity = sampler_state
 {
    Texture = (fire_opacity_Tex);
@@ -122,7 +86,7 @@ float4 bx2(float x)
    return 2.0f * x - 1.0f;
 }
 
-float4 Fire_Effects_Fire_Single_Pass_Pixel_Shader_main (float4 tc0 : TEXCOORD0, float4 tc1 : TEXCOORD1, float4 tc2 : TEXCOORD2, float4 tc3 : TEXCOORD3) : COLOR
+float4 ps_main_fire (float4 tc0 : TEXCOORD0, float4 tc1 : TEXCOORD1, float4 tc2 : TEXCOORD2, float4 tc3 : TEXCOORD3) : COLOR
 {
    // Sample noise map three times with different texture coordinates
    float4 noise0 = tex2D(fire_distortion, tc1);
@@ -219,8 +183,8 @@ technique Fire
       NORMALDEGREE = LINEAR;
       ZFUNC = ALWAYS;
 
-      VertexShader = compile vs_1_1 Fire_Effects_Fire_Single_Pass_Vertex_Shader_main();
-      PixelShader = compile ps_2_0 Fire_Effects_Fire_Single_Pass_Pixel_Shader_main();
+      VertexShader = compile vs_1_1 vs_main_fire();
+      PixelShader = compile ps_2_0 ps_main_fire();
    }
 
 }

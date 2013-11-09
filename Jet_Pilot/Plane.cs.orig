@@ -1,10 +1,11 @@
 using System;
 using System.Drawing;
 using Microsoft.DirectX;
-using Microsoft.DirectX.Direct3D;
 using TgcViewer;
-using TgcViewer.Utils.Shaders;
+using TgcViewer.Utils._2D;
 using TgcViewer.Utils.TgcSceneLoader;
+using Microsoft.DirectX.Direct3D;
+using TgcViewer.Utils.Shaders;
 
 namespace AlumnoEjemplos.Jet_Pilot
 {
@@ -33,15 +34,6 @@ namespace AlumnoEjemplos.Jet_Pilot
 
 		Vector3 deathPos;
 		bool dead;
-
-        //variables para shaders
-        private Effect efFuego;
-        private Texture g_pRenderTargetFuego;
-        private TgcTexture fuegoBase;
-        private TgcTexture fuegoDistorsion;
-        private TgcTexture fuegoOpacidad;
-        private VertexBuffer g_pVBV3D;
-        private Surface g_pDepthStencil;
 
 		public Plane()
 		{
@@ -83,8 +75,12 @@ namespace AlumnoEjemplos.Jet_Pilot
 			Matrix m = plane.Transform;
 			m = Matrix.Identity;
 			plane.Transform = m;
-          		exhaust.Transform = m;
+<<<<<<< HEAD
+            exhaust.Transform = m;
+			SetPosition(new Vector3 (0, 500.0f, 0));
+=======
 			SetPosition(new Vector3 (0, 1000.0f, 0));
+>>>>>>> f83058a483baab8a47330db28df330b3f2adee5c
 
 			dead = false;
 		}
@@ -192,50 +188,9 @@ namespace AlumnoEjemplos.Jet_Pilot
 
         private void initShaders() {
             plane.Effect = GuiController.Instance.Shaders.TgcMeshPhongShader;
-
-            //inicializacion fuego
-            string pathFuego = GuiController.Instance.AlumnoEjemplosMediaDir + "Jet_Pilot\\fuego\\";
-            Device d3dDevice = GuiController.Instance.D3dDevice;
-
-            efFuego = TgcShaders.loadEffect(pathFuego + "Fire.fx");
-            //render target
-            g_pRenderTargetFuego = new Texture(d3dDevice, 
-                                            GuiController.Instance.D3dDevice.PresentationParameters.BackBufferWidth,
-                                            GuiController.Instance.D3dDevice.PresentationParameters.BackBufferHeight, 
-                                            1, Usage.RenderTarget, Format.X8R8G8B8, Pool.Default);
-            //cargo texturas
-            fuegoBase = TgcTexture.createTexture( pathFuego + "FireBase.bmp");
-            fuegoDistorsion = TgcTexture.createTexture(pathFuego + "FireDistortion.bmp");
-            fuegoOpacidad = TgcTexture.createTexture(pathFuego + "FireOpacity.bmp");
-
-            g_pDepthStencil = d3dDevice.CreateDepthStencilSurface(d3dDevice.PresentationParameters.BackBufferWidth,
-                                                                         d3dDevice.PresentationParameters.BackBufferHeight,
-                                                                         DepthFormat.D24S8,
-                                                                         MultiSampleType.None,
-                                                                         0,
-                                                                         true);
-
-            //creo un Screen Aligned Quad para renderizar la textura del fuego
-            vertexFuego[] vertices = new vertexFuego[]
-		    {
-    			new vertexFuego( new Vector3(-1, 1, 1),new Vector2(0,0), new Vector2(0,0), new Vector2(0,0), new Vector2(0,0) ), 
-			    new vertexFuego(new Vector3(1, 1, 1), new Vector2(1,0), new Vector2(1,0), new Vector2(1,0), new Vector2(1,0) ), 
-			    new vertexFuego(new Vector3(-1, -1, 1), new Vector2(0,1), new Vector2(0,1), new Vector2(0,1), new Vector2(0,1) ), 
-			    new vertexFuego(new Vector3(1,-1, 1), , new Vector2(1,1), new Vector2(1,1), new Vector2(1,1), new Vector2(1,1) )
-    		};
-            //vertex buffer de los triangulos
-            g_pVBV3D = new VertexBuffer(typeof(CustomVertex.PositionTextured),
-                    4, d3dDevice, Usage.Dynamic | Usage.WriteOnly,
-                        vertexFuego.Format , Pool.Default);
-
-            g_pVBV3D.SetData(vertices, 0, LockFlags.None);
-
         }
 
-        private void updateShaders() 
-        {
-            Device device = GuiController.Instance.D3dDevice;
-
+        private void updateShaders() {
             //Cargar variables Phong shader
             plane.Effect.SetValue("lightPosition", TgcParserUtils.vector3ToFloat4Array((Vector3)GuiController.Instance.Modifiers["lightPos"]));
             plane.Effect.SetValue("eyePosition", TgcParserUtils.vector3ToFloat4Array(GuiController.Instance.CurrentCamera.getPosition()));
@@ -245,45 +200,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             plane.Effect.SetValue("specularExp", specularEx);
 
             //variables Fuego
-            
 
-            // dibujo la escena una textura 
-
-            // guardo el Render target anterior y seteo la textura como render target
-            Surface pOldRT = device.GetRenderTarget(0);
-            Surface pSurf = g_pRenderTargetFuego.GetSurfaceLevel(0);
-            
-            device.SetRenderTarget(0, pSurf);
-            // hago lo mismo con el depthbuffer, necesito el que no tiene multisampling
-            Surface pOldDS = device.DepthStencilSurface;
-            // Probar de comentar esta linea, para ver como se produce el fallo en el ztest
-            // por no soportar usualmente el multisampling en el render to texture.
-            device.DepthStencilSurface = g_pDepthStencil;
-
-            device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1.0f, 0);
-            device.BeginScene();
-
-            efFuego.Technique = "Fire";
-
-            efFuego.SetValue("fire_base_Tex", fuegoBase.D3dTexture);
-            efFuego.SetValue("fire_distortion_Tex", fuegoDistorsion.D3dTexture);
-            efFuego.SetValue("fire_opacity_Tex", fuegoOpacidad.D3dTexture);
-            device.VertexFormat = vertexFuego.Format;
-            device.SetStreamSource(0, g_pVBV3D,0);
-            efFuego.Begin(FX.None);
-            efFuego.BeginPass(0);
-            device.DrawPrimitives(PrimitiveType.TriangleStrip, 0, 2);
-            efFuego.EndPass();
-            efFuego.End();
-
-            device.EndScene();
-            pSurf.Dispose();
-
-            // restuaro el render target y el stencil
-            device.DepthStencilSurface = pOldDS;
-            device.SetRenderTarget(0, pOldRT);
-
-            exhaust;
         }
 
 
