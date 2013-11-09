@@ -179,7 +179,7 @@ namespace AlumnoEjemplos.Jet_Pilot
                         renderGlobos(elapsedTime);
                     }
 
-                    updateColision();
+                    //updateColision();
 
                     if (mostrar_msj)
                     {
@@ -607,12 +607,12 @@ namespace AlumnoEjemplos.Jet_Pilot
                 if (dist_menor_a_n_width(proy_pos_actual, posicion, 2))
                 {
                     terrain_hq.render(posicion);
-
+                    /*
                     if (i <= 8)
                     {
                         altura_terrenos.SetValue(posicion.Y, i);
                     }
-                    i += 1;
+                    i += 1;*/
                     //terrain_hq.render();
                 }
                 else

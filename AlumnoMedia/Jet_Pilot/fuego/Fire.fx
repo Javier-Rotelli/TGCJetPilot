@@ -1,5 +1,5 @@
 float4 layer_speed = float4( 0.69, 0.52, 0.75, 1.00 );
-float time_0_X : Time0_X;
+float time;
 
 struct VS_OUTPUT
 {
@@ -22,15 +22,15 @@ VS_OUTPUT vs_main_fire (float4 vPosition: POSITION, float3 vTexCoord0 : TEXCOORD
 
    // Base texture coordinates plus scaled time
    Out.TexCoord1.x = vTexCoord0.x;
-   Out.TexCoord1.y = vTexCoord0.y + layer_speed.x * time_0_X;
+   Out.TexCoord1.y = vTexCoord0.y + layer_speed.x * time;
 
    // Base texture coordinates plus scaled time
    Out.TexCoord2.x = vTexCoord0.x;
-   Out.TexCoord2.y = vTexCoord0.y + layer_speed.y * time_0_X;
+   Out.TexCoord2.y = vTexCoord0.y + layer_speed.y * time;
 
    // Base texture coordinates plus scaled time
    Out.TexCoord3.x = vTexCoord0.x;
-   Out.TexCoord3.y = vTexCoord0.y + layer_speed.z * time_0_X;
+   Out.TexCoord3.y = vTexCoord0.y + layer_speed.z * time;
 
    return Out;
 }

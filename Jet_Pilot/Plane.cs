@@ -42,6 +42,7 @@ namespace AlumnoEjemplos.Jet_Pilot
         private TgcTexture fuegoOpacidad;
         private VertexBuffer g_pVBV3D;
         private Surface g_pDepthStencil;
+        private float totalTime;
 
 		public Plane()
 		{
@@ -55,6 +56,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             exhaust = scene.Meshes[1];
             exhaust.AutoTransformEnable = false;
             exhaust.setColor(Color.Orange);
+            exhaust.AlphaBlendEnable = true;
 
 			rollSpeed = 2.5f;
 			pitchSpeed = 2.0f;
@@ -92,6 +94,8 @@ namespace AlumnoEjemplos.Jet_Pilot
 		public void Update(float dt)
 		{
 			if (dead) return;
+
+            totalTime += dt;
 
 			// Mover el avion hacia donde esta apuntando
 			Vector3 dir = -ZAxis();
@@ -199,10 +203,10 @@ namespace AlumnoEjemplos.Jet_Pilot
 
             efFuego = TgcShaders.loadEffect(pathFuego + "Fire.fx");
             //render target
-            g_pRenderTargetFuego = new Texture(d3dDevice, 
-                                            GuiController.Instance.D3dDevice.PresentationParameters.BackBufferWidth,
-                                            GuiController.Instance.D3dDevice.PresentationParameters.BackBufferHeight, 
-                                            1, Usage.RenderTarget, Format.X8R8G8B8, Pool.Default);
+            g_pRenderTargetFuego = new Texture(d3dDevice,
+                                            d3dDevice.PresentationParameters.BackBufferWidth,
+                                            d3dDevice.PresentationParameters.BackBufferHeight, 
+                                            1, Usage.RenderTarget, Format.A16B16G16R16, Pool.Default);
             //cargo texturas
             fuegoBase = TgcTexture.createTexture( pathFuego + "FireBase.bmp");
             fuegoDistorsion = TgcTexture.createTexture(pathFuego + "FireDistortion.bmp");
@@ -221,10 +225,10 @@ namespace AlumnoEjemplos.Jet_Pilot
     			new vertexFuego( new Vector3(-1, 1, 1),new Vector2(0,0), new Vector2(0,0), new Vector2(0,0), new Vector2(0,0) ), 
 			    new vertexFuego(new Vector3(1, 1, 1), new Vector2(1,0), new Vector2(1,0), new Vector2(1,0), new Vector2(1,0) ), 
 			    new vertexFuego(new Vector3(-1, -1, 1), new Vector2(0,1), new Vector2(0,1), new Vector2(0,1), new Vector2(0,1) ), 
-			    new vertexFuego(new Vector3(1,-1, 1), , new Vector2(1,1), new Vector2(1,1), new Vector2(1,1), new Vector2(1,1) )
+			    new vertexFuego(new Vector3(1,-1, 1), new Vector2(1,1), new Vector2(1,1), new Vector2(1,1), new Vector2(1,1) )
     		};
             //vertex buffer de los triangulos
-            g_pVBV3D = new VertexBuffer(typeof(CustomVertex.PositionTextured),
+            g_pVBV3D = new VertexBuffer(typeof(vertexFuego),
                     4, d3dDevice, Usage.Dynamic | Usage.WriteOnly,
                         vertexFuego.Format , Pool.Default);
 
@@ -268,6 +272,8 @@ namespace AlumnoEjemplos.Jet_Pilot
             efFuego.SetValue("fire_base_Tex", fuegoBase.D3dTexture);
             efFuego.SetValue("fire_distortion_Tex", fuegoDistorsion.D3dTexture);
             efFuego.SetValue("fire_opacity_Tex", fuegoOpacidad.D3dTexture);
+            efFuego.SetValue("time",totalTime);
+
             device.VertexFormat = vertexFuego.Format;
             device.SetStreamSource(0, g_pVBV3D,0);
             efFuego.Begin(FX.None);
@@ -283,7 +289,8 @@ namespace AlumnoEjemplos.Jet_Pilot
             device.DepthStencilSurface = pOldDS;
             device.SetRenderTarget(0, pOldRT);
 
-            exhaust;
+            exhaust.DiffuseMaps[0] = new TgcTexture("","",g_pRenderTargetFuego,false);
+
         }
 
 
