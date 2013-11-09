@@ -49,14 +49,14 @@ namespace AlumnoEjemplos.Jet_Pilot
         string currentTexture;
         float ScaleXZ_hq, ScaleXZ_mq, ScaleXZ_lq;
         float currentScaleY;
+        bool terreno_inicializado = false;
 
 
         //Variables Previas Avion
         Vector3 CAM_DELTA = new Vector3(0, 50, 350);
         Plane player;
         FreeCam cam;
-        bool gameOver;
-        bool reset;
+        bool avion_inicializado = false;
 
         Microsoft.DirectX.Direct3D.Device d3dDevice = GuiController.Instance.D3dDevice;
 
@@ -69,6 +69,13 @@ namespace AlumnoEjemplos.Jet_Pilot
         private TgcText2d Texto_Score;
         private TgcMp3Player sound;
         private TgcMp3Player motor;
+
+        //Varibles de mensajes por pantalla
+        private TgcText2d Msj_Choque;
+        private TgcText2d Msj_Triunfo;
+        DateTime hora_choque;
+        DateTime hora_trunfo;
+        bool mostrar_msj = false;
 
         //Variables del modo cazar globos
         bool modo_capturar_globos = false;
@@ -89,12 +96,15 @@ namespace AlumnoEjemplos.Jet_Pilot
         List<TgcMesh> nubes = new List<TgcMesh>();
         int anchoPantalla = GuiController.Instance.Panel3d.Width;
         int altoPantalla = GuiController.Instance.Panel3d.Height;
+        bool skybox_inicializado = false;
 
         //Colisiones
-        Colisionador colisionador;
-        List<Vector3> centros_terrains_colisionables;
+        //Colisionador colisionador;
+        float[] altura_terrenos;
 
+        
 
+            
 
         //Metodos principales
 
@@ -133,6 +143,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             initTerrain();
             initSkybox();
             //initColisionador();
+            initMsjs();
         }
 
         /// <summary>
@@ -167,10 +178,32 @@ namespace AlumnoEjemplos.Jet_Pilot
                         render_score();
                         renderGlobos(elapsedTime);
                     }
-                    //updateColision();
+
+                    updateColision();
+
+                    if (mostrar_msj)
+                    {
+                        if (DateTime.Now.Subtract(hora_choque).Seconds <= 2)
+                        {
+                            Msj_Choque.render();
+                        }
+                        else
+                        {
+
+                            if (DateTime.Now.Subtract(hora_trunfo).Seconds <= 2)
+                            {
+                                Msj_Triunfo.render();
+                            }
+                            else
+                            {
+                                mostrar_msj = false;
+                            }
+                        }
+                    }
                 }
             }
         }
+        
 
         /// <summary>
         /// Método que se llama cuando termina la ejecución del ejemplo.
@@ -181,6 +214,34 @@ namespace AlumnoEjemplos.Jet_Pilot
             closePlane();
             closeTerrain();
             closeSkybox();
+        }
+
+
+        private void reset() {    
+            initPlane();
+            posiciones_centros.Clear();
+            initTerrain();
+            meshes.Clear();
+            initSkybox();
+        }
+
+
+
+
+        //Metodos para mostrar msjs por pantalla
+        private void initMsjs() {
+
+            Msj_Choque = new TgcText2d();
+            Msj_Choque.Text = "Guarda con el terreno capo!!";
+            Msj_Choque.Position = new Point((int)player.GetPosition().X, altoPantalla / 3);
+            Msj_Choque.Color = Color.DarkCyan;
+            Msj_Choque.changeFont(new System.Drawing.Font("Cataclysmic", 30.0f));
+
+            Msj_Triunfo = new TgcText2d();
+            Msj_Triunfo.Text = "Felicitaciones has capturado todas las calaveras!!";
+            Msj_Triunfo.Position = new Point((int)player.GetPosition().X, altoPantalla / 3);
+            Msj_Triunfo.Color = Color.DarkCyan;
+            Msj_Triunfo.changeFont(new System.Drawing.Font("Cataclysmic", 30.0f));
         }
 
 
@@ -207,7 +268,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             Texto_Start.Color = Color.Green;
             Texto_Titulo.Color = Color.LightGray;
 
-            Texto_Start.Text = "Presione espacio para iniciar";
+            Texto_Start.Text = "Presione enter para iniciar";
             Texto_Titulo.Text = "JET PILOT";
 
             Texto_Start.changeFont(new System.Drawing.Font("Cataclysmic", 25.0f));
@@ -240,7 +301,7 @@ namespace AlumnoEjemplos.Jet_Pilot
                 sound.play(true);
             }
 
-            if (GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.Space))
+            if (GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.Return))
             {
                 juego_pausado = false;
                 sound.stop();
@@ -254,7 +315,7 @@ namespace AlumnoEjemplos.Jet_Pilot
 
             if (juego_iniciado)
             {
-                Texto_Start.Text = "Presione espacio para reanudar";
+                Texto_Start.Text = "Presione enter para reanudar";
                 if (modo_capturar_globos) {
                     render_score();
                 }
@@ -384,17 +445,16 @@ namespace AlumnoEjemplos.Jet_Pilot
         {
             Microsoft.DirectX.Direct3D.Device d3dDevice = GuiController.Instance.D3dDevice;
 
+
             //Path de Heightmap high quality del terreno
             currentHeightmap_hq = GuiController.Instance.AlumnoEjemplosMediaDir + "Jet_Pilot\\" + "Heightmaps\\" + "Heightmap_hq.jpg";
-
-
+            
             //Path de Heightmap medium quality del terreno
             currentHeightmap_mq = GuiController.Instance.AlumnoEjemplosMediaDir + "Jet_Pilot\\" + "Heightmaps\\" + "Heightmap_mq.jpg";
 
-
             //Path de Heightmap low quality del terreno
             currentHeightmap_lq = GuiController.Instance.AlumnoEjemplosMediaDir + "Jet_Pilot\\" + "Heightmaps\\" + "Heightmap_lq.jpg";
-
+            
 
 
             //Escala del mapa
@@ -408,7 +468,12 @@ namespace AlumnoEjemplos.Jet_Pilot
 
             //Path de Textura default del terreno y Modifier para cambiarla
             currentTexture = GuiController.Instance.AlumnoEjemplosMediaDir + "Jet_Pilot\\" + "Heightmaps\\" + "TerrainTexture.jpg";
-            GuiController.Instance.Modifiers.addTexture("texture", currentTexture);
+
+            if (!terreno_inicializado)
+            {
+                GuiController.Instance.Modifiers.addTexture("texture", currentTexture);
+            }
+            
 
 
             //Carga terrenos de alta,media y baja definicion: cargar heightmap y textura de color
@@ -479,6 +544,7 @@ namespace AlumnoEjemplos.Jet_Pilot
                 pos_original.X = pos_original.X + width;
             }
 
+            terreno_inicializado = true;
         }
 
 
@@ -535,12 +601,18 @@ namespace AlumnoEjemplos.Jet_Pilot
 
             //renderizo terrenos de alta, media y baja calidad de acuerdo a la distancia a la que se encuentren de la proyeccion de la camara en el plano xz
             //centros_terrains_colisionables.Clear();
+            int i = 0;
             foreach (Vector3 posicion in posiciones_centros)
             {
                 if (dist_menor_a_n_width(proy_pos_actual, posicion, 2))
                 {
                     terrain_hq.render(posicion);
-                    //centros_terrains_colisionables.Add(posicion);
+
+                    if (i <= 8)
+                    {
+                        altura_terrenos.SetValue(posicion.Y, i);
+                    }
+                    i += 1;
                     //terrain_hq.render();
                 }
                 else
@@ -587,35 +659,36 @@ namespace AlumnoEjemplos.Jet_Pilot
             cam.Enable = true;
             GuiController.Instance.CurrentCamera = cam;
 
-            // Crear modifiers
-            GuiController.Instance.Modifiers.addFloat("Velocidad de rotación", 0.5f, 1.0f, 0.6f);
-            GuiController.Instance.Modifiers.addFloat("Velocidad de pitch", 1.0f, 3.0f, 2.0f);
-            GuiController.Instance.Modifiers.addFloat("Velocidad de roll", 1.0f, 3.0f, 2.5f);
-            GuiController.Instance.Modifiers.addFloat("Velocidad de aceleración", 0, 1500.0f, 500);
-            GuiController.Instance.Modifiers.addBoolean("Modo capturar calaveras", "Activado", false);
-            GuiController.Instance.Modifiers.addBoolean("BoundingBox Avión", "Activado", false);
-            GuiController.Instance.Modifiers.addBoolean("BoundingBox Calaveras", "Activado", false);
-            GuiController.Instance.Modifiers.addInt("Cantidad de objetivos",0,100,10);
 
-            // Crear UserVars
-            GuiController.Instance.UserVars.addVar("Posición en X");
-            GuiController.Instance.UserVars.addVar("Posición en Y");
-            GuiController.Instance.UserVars.addVar("Posición en Z");
+            if (!avion_inicializado)
+            {
+                // Crear modifiers
+                GuiController.Instance.Modifiers.addFloat("Velocidad de rotación", 0.5f, 1.0f, 0.6f);
+                GuiController.Instance.Modifiers.addFloat("Velocidad de pitch", 1.0f, 3.0f, 2.0f);
+                GuiController.Instance.Modifiers.addFloat("Velocidad de roll", 1.0f, 3.0f, 2.5f);
+                GuiController.Instance.Modifiers.addFloat("Velocidad de aceleración", 0, 1500.0f, 500);
+                GuiController.Instance.Modifiers.addBoolean("Modo capturar calaveras", "Activado", false);
+                GuiController.Instance.Modifiers.addBoolean("BoundingBox Avión", "Activado", false);
+                GuiController.Instance.Modifiers.addBoolean("BoundingBox Calaveras", "Activado", false);
+                GuiController.Instance.Modifiers.addInt("Cantidad de objetivos", 0, 100, 10);
 
-            GuiController.Instance.UserVars.addVar("Avión respecto a X");
-            GuiController.Instance.UserVars.addVar("Avión respecto a Y");
-            GuiController.Instance.UserVars.addVar("Avión respecto a Z");
+                // Crear UserVars
+                GuiController.Instance.UserVars.addVar("Posición en X");
+                GuiController.Instance.UserVars.addVar("Posición en Y");
+                GuiController.Instance.UserVars.addVar("Posición en Z");
+
+                GuiController.Instance.UserVars.addVar("Avión respecto a X");
+                GuiController.Instance.UserVars.addVar("Avión respecto a Y");
+                GuiController.Instance.UserVars.addVar("Avión respecto a Z");
+            }
 
             GuiController.Instance.Modifiers.addVertex3f("lightPos", new Vector3(-5000, -5000, -5000), new Vector3(5000, 8000, 5000), new Vector3(0, 4750, -2500));
+            avion_inicializado = true;
             ResetPlane();
         }
 
         void ResetPlane()
         {
-            gameOver = false;
-
-            reset = false;
-
             player.Reset();
 
             // Extraigo los ejes del avion de su matriz transformación
@@ -650,19 +723,19 @@ namespace AlumnoEjemplos.Jet_Pilot
         /// <param name="dt">Tiempo desde la última ejecución</param>
         public void CheckInput(float dt)
         {
-            if (!gameOver)
-            {
-                // El menu se activa solo al chocar, y no se puede salir, solo resetear
-                bool enter = GuiController.Instance.D3dInput.keyPressed(Microsoft.DirectX.DirectInput.Key.Return);
-            }
+            
+            
+            // El menu se activa solo al chocar, y no se puede salir, solo resetear
+            bool enter = GuiController.Instance.D3dInput.keyPressed(Microsoft.DirectX.DirectInput.Key.Return);
+            
 
             bool up = GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.W);
             bool down = GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.S);
             bool left = GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.A);
             bool right = GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.D);
 
-            bool plus = GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.UpArrow);
-            bool minus = GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.DownArrow);
+            bool plus = GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.Space);
+            bool minus = GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.RightControl);
 
             player.SetYoke(up, down, left, right);
             player.SetThrottle(plus, minus);
@@ -695,13 +768,6 @@ namespace AlumnoEjemplos.Jet_Pilot
         /// <param name="dt">Tiempo desde la última ejecución</param>
         public void UpdatePlane(float dt)
         {
-            // Comando de resetear el juego
-            if (reset)
-            {
-                ResetPlane();
-                return;
-            }
-
             // Control de saltos en casos de bajo rendimiento y pérdida del foco
             if (dt > 0.1f) dt = 0.1f;
 
@@ -742,20 +808,50 @@ namespace AlumnoEjemplos.Jet_Pilot
 
         //colisionador
 
-        private void initColisionador()
-        {
-            centros_terrains_colisionables = new List<Vector3>();
-            colisionador = new Colisionador(terrain_hq, width, currentScaleY);
+        //private void initColisionador()
+        //{
+        //    centros_terrains_colisionables = new List<Vector3>();
+        //    colisionador = new Colisionador(terrain_hq, width, currentScaleY);
+        //}
+
+        //private void updateColision()
+        //{
+        //    //hago colisionar el avion
+        //    if (colisionador.colisionar(player.getMesh(), centros_terrains_colisionables))
+        //        ResetPlane();
+        //}
+
+
+        private void initColisionador() {
+            altura_terrenos = new float[9];
         }
 
-        private void updateColision()
-        {
-            //hago colisionar el avion
-            if (colisionador.colisionar(player.getMesh(), centros_terrains_colisionables))
-                ResetPlane();
+        private void updateColision(){
+
+            bool choca = false;
+
+            foreach (float altura in altura_terrenos)
+            {
+                float umbral = 300;
+                choca = false;
+
+                Vector3 pos_avion = player.GetPosition();
+
+                if ((pos_avion.Y - altura) <= umbral){
+                    choca = true;
+                    break;
+                }
+            } 
+
+            if (choca)
+            {
+                mostrar_msj = true;
+                hora_choque = DateTime.Now;
+                reset();
+                //System.Threading.Thread.Sleep(200);
+            }
+
         }
-
-
 
 
         //Metodos para el Skybox
@@ -835,16 +931,20 @@ namespace AlumnoEjemplos.Jet_Pilot
 
             ///////////////MODIFIERS//////////////////
 
-            ////Crear un modifier para un valor FLOAT
-            GuiController.Instance.Modifiers.addFloat("valorFloat", -50f, 200f, 0f);
+            if (!skybox_inicializado)
+            {
+                ////Crear un modifier para un valor FLOAT
+                GuiController.Instance.Modifiers.addFloat("valorFloat", -50f, 200f, 0f);
 
-            ////Crear un modifier para un ComboBox con opciones
-            string[] opciones = new string[] { "opcion1", "opcion2", "opcion3" };
-            GuiController.Instance.Modifiers.addInterval("valorIntervalo", opciones, 0);
+                ////Crear un modifier para un ComboBox con opciones
+                string[] opciones = new string[] { "opcion1", "opcion2", "opcion3" };
+                GuiController.Instance.Modifiers.addInterval("valorIntervalo", opciones, 0);
 
-            ////Crear un modifier para modificar un v�rtice
-            GuiController.Instance.Modifiers.addVertex3f("valorVertice", new Vector3(-1000, -1000, -1000), new Vector3(5000, 5000, 5000), new Vector3((anchoPantalla / 2) - 20, (altoPantalla / 2) - 100, anchoPantalla / 2));
+                ////Crear un modifier para modificar un v�rtice
+                GuiController.Instance.Modifiers.addVertex3f("valorVertice", new Vector3(-1000, -1000, -1000), new Vector3(5000, 5000, 5000), new Vector3((anchoPantalla / 2) - 20, (altoPantalla / 2) - 100, anchoPantalla / 2));
+            }
 
+            skybox_inicializado = true;
         }
 
         /// </summary>
@@ -1007,15 +1107,15 @@ namespace AlumnoEjemplos.Jet_Pilot
         //Métodos para generación, renderizado, colisión y eliminación de globos
 
         public void initGlobos(){ /*Cargar Mesh de objetivo*/
-        
             String path = GuiController.Instance.ExamplesMediaDir + @"MeshCreator\Meshes\Esqueletos\Calabera\Calabera-TgcScene.xml";
             TgcSceneLoader loader = new TgcSceneLoader();
             Globo = loader.loadSceneFromFile(path).Meshes[0];
-            Globo.Scale = new Vector3(4, 4, 4);
+            Globo.Scale = new Vector3(3, 3, 3);
             generarGlobos();
         }
 
-        public void renderGlobos(float elapsedTime){/*Envía los Globos a renderizar*/
+        public void renderGlobos(float elapsedTime)
+        {/*Envía los Globos a renderizar*/
 
             Vector3 centro_globo;
             Vector3 centro_avion = player.Get_Center();
@@ -1038,6 +1138,12 @@ namespace AlumnoEjemplos.Jet_Pilot
                     {
                         quitarGlobo(i);
                         Score = Score + 1;
+
+                        if (Score == cantidad_globos) { //Si completé el nivel debo mostrar msj de felicitaciones
+                            hora_trunfo = DateTime.Now;
+                            mostrar_msj = true;
+                        }
+
                     }
                     else //No colisiona, entonces lo dibujo
                     {
@@ -1087,8 +1193,8 @@ namespace AlumnoEjemplos.Jet_Pilot
             }
         }
 
-        private void quitarGlobo(int index){/*Elimino un globo ya capturado*/
-        
+        private void quitarGlobo(int index)
+        {/*Elimino un globo ya capturado*/
             Array.Clear(objetivos, index, 1);
         }
 

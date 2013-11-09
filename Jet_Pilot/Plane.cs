@@ -75,8 +75,8 @@ namespace AlumnoEjemplos.Jet_Pilot
 			Matrix m = plane.Transform;
 			m = Matrix.Identity;
 			plane.Transform = m;
-            exhaust.Transform = m;
-			SetPosition(new Vector3 (0, 500.0f, 0));
+          		exhaust.Transform = m;
+			SetPosition(new Vector3 (0, 1000.0f, 0));
 
 			dead = false;
 		}
@@ -202,9 +202,10 @@ namespace AlumnoEjemplos.Jet_Pilot
 
 		public void Render(bool BB_activado){
 			
+	    plane.BoundingBox.scaleTranslate(GetPosition(), plane.Scale);
+			
             if (BB_activado)
             {
-                plane.Position = GetPosition();
                 plane.BoundingBox.render();
             }
             updateShaders();
