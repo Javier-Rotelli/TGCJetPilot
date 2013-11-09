@@ -132,7 +132,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             initPlane();
             initTerrain();
             initSkybox();
-            initColisionador();
+            //initColisionador();
         }
 
         /// <summary>
@@ -606,6 +606,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             GuiController.Instance.UserVars.addVar("Avión respecto a Y");
             GuiController.Instance.UserVars.addVar("Avión respecto a Z");
 
+            GuiController.Instance.Modifiers.addVertex3f("lightPos", new Vector3(-5000, -5000, -5000), new Vector3(5000, 8000, 5000), new Vector3(0, 4750, -2500));
             ResetPlane();
         }
 

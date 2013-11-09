@@ -4,12 +4,15 @@ using Microsoft.DirectX;
 using TgcViewer;
 using TgcViewer.Utils._2D;
 using TgcViewer.Utils.TgcSceneLoader;
+using Microsoft.DirectX.Direct3D;
+using TgcViewer.Utils.Shaders;
 
 namespace AlumnoEjemplos.Jet_Pilot
 {
 	class Plane
 	{
 		TgcMesh plane;
+        TgcMesh exhaust;
 		float pitchSpeed;
 		float rollSpeed;
 		float velocidad_aceleracion;
@@ -20,23 +23,39 @@ namespace AlumnoEjemplos.Jet_Pilot
 		float velocidad_tangente;
 		float velocidad_normal;
 
+
+        float specularEx = 20f;
+        public float SpecularEx
+        {
+            get { return specularEx; }
+            set { specularEx = value; }
+        }
+        public Vector3 lightPos { get; set; }
+
 		Vector3 deathPos;
 		bool dead;
 
 		public Plane()
 		{
-			String path = GuiController.Instance.ExamplesMediaDir + @"MeshCreator\Meshes\Vehiculos\AvionCaza\AvionCaza-TgcScene.xml";
+            String path = GuiController.Instance.AlumnoEjemplosMediaDir + @"Jet_Pilot\caza\caza-TgcScene.xml";
 			TgcSceneLoader loader = new TgcSceneLoader();
-			plane = loader.loadSceneFromFile(path).Meshes[0];
+            TgcScene scene = loader.loadSceneFromFile(path);
+			plane = scene.Meshes[0];
 			plane.AutoTransformEnable = false;
             plane.setColor(Color.DarkGray);
+            
+            exhaust = scene.Meshes[1];
+            exhaust.AutoTransformEnable = false;
+            exhaust.setColor(Color.Orange);
 
 			rollSpeed = 2.5f;
 			pitchSpeed = 2.0f;
 			velocidad_normal = 0.6f;
 			velocidad_aceleracion = 500.0f;
-
-			Reset();
+            
+            initShaders();
+			
+            Reset();
 		}
 
         //hago el getter del avion
@@ -56,6 +75,7 @@ namespace AlumnoEjemplos.Jet_Pilot
 			Matrix m = plane.Transform;
 			m = Matrix.Identity;
 			plane.Transform = m;
+            exhaust.Transform = m;
 			SetPosition(new Vector3 (0, 500.0f, 0));
 
 			dead = false;
@@ -95,6 +115,7 @@ namespace AlumnoEjemplos.Jet_Pilot
 			Matrix r = CreateRotationMatrix(GetPosition(), new Vector3(0, 1, 0), turn);
 			m.Multiply(r);
 			plane.Transform = m;
+            exhaust.Transform = m;
 		}
 
         public Vector3 Get_Center() {
@@ -160,6 +181,25 @@ namespace AlumnoEjemplos.Jet_Pilot
             velocidad_aceleracion = new_acel; 
         }
 
+
+        private void initShaders() {
+            plane.Effect = GuiController.Instance.Shaders.TgcMeshPhongShader;
+        }
+
+        private void updateShaders() {
+            //Cargar variables Phong shader
+            plane.Effect.SetValue("lightPosition", TgcParserUtils.vector3ToFloat4Array((Vector3)GuiController.Instance.Modifiers["lightPos"]));
+            plane.Effect.SetValue("eyePosition", TgcParserUtils.vector3ToFloat4Array(GuiController.Instance.CurrentCamera.getPosition()));
+            plane.Effect.SetValue("ambientColor", ColorValue.FromColor(Color.White));
+            plane.Effect.SetValue("diffuseColor", ColorValue.FromColor(Color.Wheat));
+            plane.Effect.SetValue("specularColor", ColorValue.FromColor(Color.White));
+            plane.Effect.SetValue("specularExp", specularEx);
+
+            //variables Fuego
+
+        }
+
+
 		public void Render(bool BB_activado){
 			
             if (BB_activado)
@@ -167,7 +207,9 @@ namespace AlumnoEjemplos.Jet_Pilot
                 plane.Position = GetPosition();
                 plane.BoundingBox.render();
             }
-		    plane.render();      
+            updateShaders();
+		    plane.render();
+            exhaust.render();
 		}
 
 		public float GetAirSpeed()
@@ -202,6 +244,7 @@ namespace AlumnoEjemplos.Jet_Pilot
 			t.M43 = delta.Z;
 			m.Multiply(t);
 			plane.Transform = m;
+            exhaust.Transform = m;
 		}
 
 		public Vector3 GetPosition()
@@ -217,6 +260,7 @@ namespace AlumnoEjemplos.Jet_Pilot
 			m.M42 = p.Y;
 			m.M43 = p.Z;
 			plane.Transform = m;
+            exhaust.Transform = m;
 		}
 
 		public void RotateAroundX(float ang)
@@ -225,6 +269,7 @@ namespace AlumnoEjemplos.Jet_Pilot
 			Matrix r = CreateRotationMatrix(GetPosition(), XAxis(), ang);
 			m.Multiply(r);
 			plane.Transform = m;
+            exhaust.Transform = m;
 		}
 		public void RotateAroundY(float ang)
 		{
@@ -232,6 +277,7 @@ namespace AlumnoEjemplos.Jet_Pilot
 			Matrix r = CreateRotationMatrix(GetPosition(), YAxis(), ang);
 			m.Multiply(r);
 			plane.Transform = m;
+            exhaust.Transform = m;
 		}
 		public void RotateAroundZ(float ang)
 		{
@@ -239,6 +285,7 @@ namespace AlumnoEjemplos.Jet_Pilot
 			Matrix r = CreateRotationMatrix(GetPosition(), ZAxis(), ang);
 			m.Multiply(r);
 			plane.Transform = m;
+            exhaust.Transform = m;
 		}
 
 		Matrix CreateRotationMatrix(Vector3 p, Vector3 dir, float ang)
@@ -267,5 +314,5 @@ namespace AlumnoEjemplos.Jet_Pilot
 
 			return r;
 		}
-	}
+    }
 }
