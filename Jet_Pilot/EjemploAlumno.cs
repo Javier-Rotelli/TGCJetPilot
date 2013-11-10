@@ -175,8 +175,7 @@ namespace AlumnoEjemplos.Jet_Pilot
                 }
                 else
                 {
-                    motor.stop();
-                    
+
                     renderTerrainAndClouds(elapsedTime);
                     
                     renderPlane(elapsedTime);
@@ -473,7 +472,7 @@ namespace AlumnoEjemplos.Jet_Pilot
                     _1_.Y = nuevo_centro.Y + generador.Next(15000) + 6000;
                     posiciones_centros_nubes.Add(_1_);
                 }
-                avance_random = Convert.ToInt32(generador.Next(5)) + 6;
+                avance_random = Convert.ToInt32(generador.Next(10)) + 20;
             }
             else
             {
@@ -554,7 +553,7 @@ namespace AlumnoEjemplos.Jet_Pilot
 
 
             //Seteo el primer valor random que se va a considerar como contador general..
-            avance_random = Convert.ToInt32(generador.Next(5)) + 6;
+            avance_random = Convert.ToInt32(generador.Next(5)) + 10;
 
 
             //Generar lista de posiciones de centros de terreno inicial
@@ -594,7 +593,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             }
 
             terreno_inicializado = true;
-/*
+
             //Generar lista de posiciones de centros de nubes inicial
             posiciones_centros_nubes = new List<Vector3>();
             for (int x = 0; x < posiciones_centros.Count; x = x + avance_random)
@@ -604,9 +603,9 @@ namespace AlumnoEjemplos.Jet_Pilot
                 nuevo_punto.Y = posiciones_centros[x].Y + generador.Next(15000) + 6000;
                 nuevo_punto.Z = posiciones_centros[x].Z;
                 posiciones_centros_nubes.Add(nuevo_punto);
-                avance_random = Convert.ToInt32(generador.Next(5)) + 6;
+                avance_random = Convert.ToInt32(generador.Next(5)) + 10;
             }
-  */          
+           
 
             //Carga de la nube
             //Activamos el renderizado customizado. De esta forma el framework nos delega control total sobre como dibujar en pantalla
@@ -668,8 +667,10 @@ namespace AlumnoEjemplos.Jet_Pilot
                 {
                     a_borrar.Add(posicion);
                 }
+
             }
 
+            
             //Borrado de centros de terreno alejados
             foreach (Vector3 posicion_a_borrar in a_borrar)
             {
@@ -696,6 +697,7 @@ namespace AlumnoEjemplos.Jet_Pilot
                 {
                     a_borrar.Add(posicion);
                 }
+
             }
             
             foreach (Vector3 posicion_a_borrar in a_borrar)
