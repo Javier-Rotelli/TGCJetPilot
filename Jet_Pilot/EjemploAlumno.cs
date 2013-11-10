@@ -108,9 +108,9 @@ namespace AlumnoEjemplos.Jet_Pilot
         //Colisionador colisionador;
         float[] altura_terrenos;
 
-        
 
-            
+
+
 
         //Metodos principales
 
@@ -177,12 +177,19 @@ namespace AlumnoEjemplos.Jet_Pilot
                 {
 
                     renderTerrainAndClouds(elapsedTime);
-                    
+
                     renderPlane(elapsedTime);
 
                     renderSkybox(elapsedTime);
 
-                                 
+                    if (sound.getStatus() != TgcMp3Player.States.Playing && motor.getStatus() != TgcMp3Player.States.Playing)
+                    {
+                        sound.closeFile();
+                        motor = GuiController.Instance.Mp3Player;
+                        motor.FileName = GuiController.Instance.AlumnoEjemplosMediaDir +
+                        "Jet_Pilot\\Sonido\\avion_3.mp3";
+                        motor.play(true);
+                    }
 
                     if (modo_capturar_globos)
                     {
@@ -214,7 +221,7 @@ namespace AlumnoEjemplos.Jet_Pilot
                 }
             }
         }
-        
+
 
         /// <summary>
         /// Método que se llama cuando termina la ejecución del ejemplo.
@@ -228,7 +235,8 @@ namespace AlumnoEjemplos.Jet_Pilot
         }
 
 
-        private void reset() {    
+        private void reset()
+        {
             initPlane();
             posiciones_centros.Clear();
             initTerrainAndClouds();
@@ -240,7 +248,8 @@ namespace AlumnoEjemplos.Jet_Pilot
 
 
         //Metodos para mostrar msjs por pantalla
-        private void initMsjs() {
+        private void initMsjs()
+        {
 
             Msj_Choque = new TgcText2d();
             Msj_Choque.Text = "Guarda con el terreno capo!!";
@@ -327,7 +336,8 @@ namespace AlumnoEjemplos.Jet_Pilot
             if (juego_iniciado)
             {
                 Texto_Start.Text = "Presione enter para reanudar";
-                if (modo_capturar_globos) {
+                if (modo_capturar_globos)
+                {
                     render_score();
                 }
             }
@@ -360,7 +370,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             float distancia = resultante.Length();
 
             return (distancia <= (width * n));
-            
+
         }
 
         private bool dist_mayor_a_n_width(Vector3 pos_camara, Vector3 pos_espacio, int n)
@@ -369,7 +379,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             float distancia = resultante.Length();
 
             return (distancia >= (width * n));
-            
+
         }
 
         private void generar_puntos_alrededor(Vector3 posicion)
@@ -436,7 +446,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             posiciones_a_analizar.Add(_9_);
 
 
-            
+
 
             foreach (Vector3 nueva_pos in posiciones_a_analizar)
             {
@@ -458,7 +468,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             {
                 foreach (Vector3 elem in posiciones_centros_nubes)
                 {
-                    if (elem.X==nuevo_centro.X && elem.Z==nuevo_centro.Z)
+                    if (elem.X == nuevo_centro.X && elem.Z == nuevo_centro.Z)
                     {
                         vertice_existente = true;
                         break;
@@ -466,7 +476,7 @@ namespace AlumnoEjemplos.Jet_Pilot
                 }
                 if (!vertice_existente)
                 {
-                    Vector3 _1_=new Vector3();
+                    Vector3 _1_ = new Vector3();
                     _1_.Z = nuevo_centro.Z;
                     _1_.X = nuevo_centro.X;
                     _1_.Y = nuevo_centro.Y + generador.Next(15000) + 6000;
@@ -478,7 +488,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             {
                 avance_random--;
             }
-                
+
         }
 
         public void initTerrainAndClouds()
@@ -488,13 +498,13 @@ namespace AlumnoEjemplos.Jet_Pilot
 
             //Path de Heightmap high quality del terreno
             currentHeightmap_hq = GuiController.Instance.AlumnoEjemplosMediaDir + "Jet_Pilot\\" + "Heightmaps\\" + "Heightmap_hq.jpg";
-            
+
             //Path de Heightmap medium quality del terreno
             currentHeightmap_mq = GuiController.Instance.AlumnoEjemplosMediaDir + "Jet_Pilot\\" + "Heightmaps\\" + "Heightmap_mq.jpg";
 
             //Path de Heightmap low quality del terreno
             currentHeightmap_lq = GuiController.Instance.AlumnoEjemplosMediaDir + "Jet_Pilot\\" + "Heightmaps\\" + "Heightmap_lq.jpg";
-            
+
 
 
             //Escala del mapa
@@ -513,7 +523,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             {
                 GuiController.Instance.Modifiers.addTexture("texture", currentTexture);
             }
-            
+
 
 
             //Carga terrenos de alta,media y baja definicion: cargar heightmap y textura de color
@@ -626,7 +636,7 @@ namespace AlumnoEjemplos.Jet_Pilot
 
             //Posicionamiento de la nube
             nube.Position = new Vector3(0, 0, 0);
-            nube.Scale = new Vector3(2,2,2);
+            nube.Scale = new Vector3(2, 2, 2);
 
             //Seteo configuracion de la niebla
             GuiController.Instance.Fog.StartDistance = 1;
@@ -658,7 +668,7 @@ namespace AlumnoEjemplos.Jet_Pilot
 
 
             //genero las posiciones de los centros que se requieran que se agreguen "a lo lejos"
-            
+
             foreach (Vector3 posicion in posiciones_centros)
             {
                 //Esta forma de averiguar que puntos estan delante de la camara funciona, pero no resultó performante, por lo que se reemplazo la condicion del if
@@ -677,13 +687,13 @@ namespace AlumnoEjemplos.Jet_Pilot
 
             }
 
-            
+
             //Borrado de centros de terreno alejados
             foreach (Vector3 posicion_a_borrar in a_borrar)
             {
                 posiciones_centros.Remove(posicion_a_borrar);
             }
-            
+
 
             a_borrar.Clear();
 
@@ -692,7 +702,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             {
                 generar_puntos_alrededor(posicion_a_revisar);
             }
-            
+
             //Borrado de centros de nubes alejados
             Vector3 proyeccion_posicion_nube = new Vector3();
             foreach (Vector3 posicion in posiciones_centros_nubes)
@@ -706,7 +716,7 @@ namespace AlumnoEjemplos.Jet_Pilot
                 }
 
             }
-            
+
             foreach (Vector3 posicion_a_borrar in a_borrar)
             {
                 posiciones_centros_nubes.Remove(posicion_a_borrar);
@@ -778,39 +788,39 @@ namespace AlumnoEjemplos.Jet_Pilot
 
             //d3dDevice.EndScene();
 
-           //renderizo terrenos de alta, media y baja calidad de acuerdo a la distancia a la que se encuentren de la proyeccion de la camara en el plano xz
-           //centros_terrains_colisionables.Clear();
-           int i = 0;
+            //renderizo terrenos de alta, media y baja calidad de acuerdo a la distancia a la que se encuentren de la proyeccion de la camara en el plano xz
+            //centros_terrains_colisionables.Clear();
+            int i = 0;
 
-           //Renderizado de terreno
-           foreach (Vector3 posicion in posiciones_centros)
-           {
-               if (dist_menor_a_n_width(proy_pos_actual, posicion, 2))
-               {
-                   terrain_hq.render(posicion);
-                   
-                   if (i <= 8)
-                   {
-                       altura_terrenos.SetValue(posicion.Y, i);
-                   }
-                   i += 1;
-                   //terrain_hq.render();
-               }
-               else
-               {
-                   if (dist_menor_a_n_width(proy_pos_actual, posicion, 4))
-                   {
-                       terrain_mq.render(posicion);
-                       //terrain_mq.render();
-                   }
-                   else
-                   {
-                       terrain_lq.render(posicion);
-                       //terrain_lq.render();
-                   }
+            //Renderizado de terreno
+            foreach (Vector3 posicion in posiciones_centros)
+            {
+                if (dist_menor_a_n_width(proy_pos_actual, posicion, 2))
+                {
+                    terrain_hq.render(posicion);
 
-               }
-           }
+                    if (i <= 8)
+                    {
+                        altura_terrenos.SetValue(posicion.Y, i);
+                    }
+                    i += 1;
+                    //terrain_hq.render();
+                }
+                else
+                {
+                    if (dist_menor_a_n_width(proy_pos_actual, posicion, 4))
+                    {
+                        terrain_mq.render(posicion);
+                        //terrain_mq.render();
+                    }
+                    else
+                    {
+                        terrain_lq.render(posicion);
+                        //terrain_lq.render();
+                    }
+
+                }
+            }
         }
 
         public void closeTerrain()
@@ -843,7 +853,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             {
                 // Crear modifiers
 
-                
+
                 GuiController.Instance.Modifiers.addBoolean("Modo capturar calaveras", "Activado", false);
                 GuiController.Instance.Modifiers.addBoolean("BoundingBox Avión", "Activado", false);
                 GuiController.Instance.Modifiers.addBoolean("BoundingBox Calaveras", "Activado", false);
@@ -863,7 +873,7 @@ namespace AlumnoEjemplos.Jet_Pilot
                 //GuiController.Instance.UserVars.addVar("Avión respecto a Z");
                 GuiController.Instance.Modifiers.addVertex3f("lightPos", new Vector3(-5000, -5000, -5000), new Vector3(5000, 8000, 5000), new Vector3(0, 4750, -2500));
             }
-           
+
             avion_inicializado = true;
             ResetPlane();
         }
@@ -897,18 +907,19 @@ namespace AlumnoEjemplos.Jet_Pilot
             DrawPlane(elapsedTime);
         }
 
-        public void closePlane(){
+        public void closePlane()
+        {
             player.close();
         }
 
         /// <param name="dt">Tiempo desde la última ejecución</param>
         public void CheckInput(float dt)
         {
-            
-            
+
+
             // El menu se activa solo al chocar, y no se puede salir, solo resetear
             bool enter = GuiController.Instance.D3dInput.keyPressed(Microsoft.DirectX.DirectInput.Key.Return);
-            
+
 
             bool up = GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.W);
             bool down = GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.S);
@@ -931,13 +942,14 @@ namespace AlumnoEjemplos.Jet_Pilot
             BBAvion = (bool)GuiController.Instance.Modifiers["BoundingBox Avión"];
             BBGlobos = (bool)GuiController.Instance.Modifiers["BoundingBox Calaveras"];
 
-            if (cantidad_globos != cantidad_actual) {
+            if (cantidad_globos != cantidad_actual)
+            {
 
                 cantidad_globos = cantidad_actual;
                 generarGlobos();
-            
+
             }
-            
+
 
             player.SetTurnSpeed(turnSpeed);
             player.SetPitchSpeed(pitchSpeed);
@@ -1003,11 +1015,13 @@ namespace AlumnoEjemplos.Jet_Pilot
         //}
 
 
-        private void initColisionador() {
+        private void initColisionador()
+        {
             altura_terrenos = new float[9];
         }
 
-        private void updateColision(){
+        private void updateColision()
+        {
 
             bool choca = false;
 
@@ -1018,14 +1032,21 @@ namespace AlumnoEjemplos.Jet_Pilot
 
                 Vector3 pos_avion = player.GetPosition();
 
-                if ((pos_avion.Y - altura) <= umbral){
+                if ((pos_avion.Y - altura) <= umbral)
+                {
                     choca = true;
                     break;
                 }
-            } 
+            }
 
             if (choca)
             {
+                motor.stop();
+                motor.closeFile();
+                sound = GuiController.Instance.Mp3Player;
+                sound.FileName = GuiController.Instance.AlumnoEjemplosMediaDir +
+                "Jet_Pilot\\Sonido\\Motor_Apagandose.mp3";
+                sound.play(false);
                 mostrar_msj = true;
                 hora_choque = DateTime.Now;
                 reset();
@@ -1068,7 +1089,7 @@ namespace AlumnoEjemplos.Jet_Pilot
 
             //Posicionar el avion
             //meshes[0].Position = new Vector3(anchoPantalla / 2, altoPantalla / 2, anchoPantalla / 2);
-            
+
 
             ////Camara en tercera persona que apunta al avion
             //GuiController.Instance.ThirdPersonCamera.Enable = true;
@@ -1097,12 +1118,12 @@ namespace AlumnoEjemplos.Jet_Pilot
             skybox_inicializado = true;
         }
 
-        
+
         /// </summary>
         /// <param name="elapsedTime">Tiempo en segundos transcurridos desde el �ltimo frame</param>
         public void renderSkybox(float elapsedTime)
         {
-            
+
             //Device de DirectX para renderizar
             Microsoft.DirectX.Direct3D.Device d3dDevice = GuiController.Instance.D3dDevice;
 
@@ -1193,7 +1214,8 @@ namespace AlumnoEjemplos.Jet_Pilot
 
         //Métodos para generación, renderizado, colisión y eliminación de globos
 
-        public void initGlobos(){ /*Cargar Mesh de objetivo*/
+        public void initGlobos()
+        { /*Cargar Mesh de objetivo*/
             String path = GuiController.Instance.ExamplesMediaDir + @"MeshCreator\Meshes\Esqueletos\Calabera\Calabera-TgcScene.xml";
             TgcSceneLoader loader = new TgcSceneLoader();
             Globo = loader.loadSceneFromFile(path).Meshes[0];
@@ -1225,10 +1247,23 @@ namespace AlumnoEjemplos.Jet_Pilot
                     {
                         quitarGlobo(i);
                         Score = Score + 1;
+                        motor.stop();
+                        motor.closeFile();
+                        sound = GuiController.Instance.Mp3Player;
+                        sound.FileName = GuiController.Instance.AlumnoEjemplosMediaDir +
+                        "Jet_Pilot\\Sonido\\Sonido_Captura1.mp3";
+                        sound.play(false);
 
-                        if (Score == cantidad_globos) { //Si completé el nivel debo mostrar msj de felicitaciones
+                        if (Score == cantidad_globos)
+                        { //Si completé el nivel debo mostrar msj de felicitaciones
                             hora_trunfo = DateTime.Now;
                             mostrar_msj = true;
+                            //sound = GuiController.Instance.Mp3Player;
+                            sound.closeFile();
+                            sound.FileName = GuiController.Instance.AlumnoEjemplosMediaDir +
+                            "Jet_Pilot\\Sonido\\Musica_Victoria.mp3";
+                            sound.play(false);
+                            Score = 0;
                         }
 
                     }
@@ -1246,7 +1281,8 @@ namespace AlumnoEjemplos.Jet_Pilot
             }
         }
 
-        private void generarGlobos(){/*Crear vector de globos*/
+        private void generarGlobos()
+        {/*Crear vector de globos*/
 
             objetivos = new Vector3[cantidad_globos];
             objetivos.Initialize();
