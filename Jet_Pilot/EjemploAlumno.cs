@@ -148,7 +148,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             initPlane();
             initTerrainAndClouds();
             initSkybox();
-            //initColisionador();
+            initColisionador();
             initMsjs();
         }
 
@@ -190,7 +190,7 @@ namespace AlumnoEjemplos.Jet_Pilot
                         renderGlobos(elapsedTime);
                     }
 
-                    //updateColision();
+                    updateColision();
 
                     if (mostrar_msj)
                     {
@@ -232,7 +232,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             initPlane();
             posiciones_centros.Clear();
             initTerrainAndClouds();
-            meshes.Clear();
+            //meshes.Clear();
             initSkybox();
         }
 
@@ -780,7 +780,7 @@ namespace AlumnoEjemplos.Jet_Pilot
 
            //renderizo terrenos de alta, media y baja calidad de acuerdo a la distancia a la que se encuentren de la proyeccion de la camara en el plano xz
            //centros_terrains_colisionables.Clear();
-           //int i = 0;
+           int i = 0;
 
            //Renderizado de terreno
            foreach (Vector3 posicion in posiciones_centros)
@@ -788,12 +788,12 @@ namespace AlumnoEjemplos.Jet_Pilot
                if (dist_menor_a_n_width(proy_pos_actual, posicion, 2))
                {
                    terrain_hq.render(posicion);
-                   /*
+                   
                    if (i <= 8)
                    {
                        altura_terrenos.SetValue(posicion.Y, i);
                    }
-                   i += 1;*/
+                   i += 1;
                    //terrain_hq.render();
                }
                else
@@ -842,26 +842,28 @@ namespace AlumnoEjemplos.Jet_Pilot
             if (!avion_inicializado)
             {
                 // Crear modifiers
-                GuiController.Instance.Modifiers.addFloat("Velocidad de rotación", 0.5f, 1.0f, 0.6f);
-                GuiController.Instance.Modifiers.addFloat("Velocidad de pitch", 1.0f, 3.0f, 2.0f);
-                GuiController.Instance.Modifiers.addFloat("Velocidad de roll", 1.0f, 3.0f, 2.5f);
-                GuiController.Instance.Modifiers.addFloat("Velocidad de aceleración", 0, 1500.0f, 500);
+
+                
                 GuiController.Instance.Modifiers.addBoolean("Modo capturar calaveras", "Activado", false);
                 GuiController.Instance.Modifiers.addBoolean("BoundingBox Avión", "Activado", false);
                 GuiController.Instance.Modifiers.addBoolean("BoundingBox Calaveras", "Activado", false);
                 GuiController.Instance.Modifiers.addInt("Cantidad de objetivos", 0, 100, 10);
+                GuiController.Instance.Modifiers.addFloat("Velocidad de aceleración", 0, 1500.0f, 500);
+                GuiController.Instance.Modifiers.addFloat("Velocidad de rotación", 0.5f, 1.0f, 0.6f);
+                GuiController.Instance.Modifiers.addFloat("Velocidad de pitch", 1.0f, 3.0f, 2.0f);
+                GuiController.Instance.Modifiers.addFloat("Velocidad de roll", 1.0f, 3.0f, 2.5f);
 
                 // Crear UserVars
                 GuiController.Instance.UserVars.addVar("Posición en X");
                 GuiController.Instance.UserVars.addVar("Posición en Y");
                 GuiController.Instance.UserVars.addVar("Posición en Z");
 
-                GuiController.Instance.UserVars.addVar("Avión respecto a X");
-                GuiController.Instance.UserVars.addVar("Avión respecto a Y");
-                GuiController.Instance.UserVars.addVar("Avión respecto a Z");
+                //GuiController.Instance.UserVars.addVar("Avión respecto a X");
+                //GuiController.Instance.UserVars.addVar("Avión respecto a Y");
+                //GuiController.Instance.UserVars.addVar("Avión respecto a Z");
+                GuiController.Instance.Modifiers.addVertex3f("lightPos", new Vector3(-5000, -5000, -5000), new Vector3(5000, 8000, 5000), new Vector3(0, 4750, -2500));
             }
-
-            GuiController.Instance.Modifiers.addVertex3f("lightPos", new Vector3(-5000, -5000, -5000), new Vector3(5000, 8000, 5000), new Vector3(0, 4750, -2500));
+           
             avion_inicializado = true;
             ResetPlane();
         }
@@ -895,8 +897,8 @@ namespace AlumnoEjemplos.Jet_Pilot
             DrawPlane(elapsedTime);
         }
 
-        public void closePlane()
-        {
+        public void closePlane(){
+            player.close();
         }
 
         /// <param name="dt">Tiempo desde la última ejecución</param>
@@ -962,9 +964,9 @@ namespace AlumnoEjemplos.Jet_Pilot
             GuiController.Instance.UserVars.setValue("Posición en Y", plane.Y);
             GuiController.Instance.UserVars.setValue("Posición en Z", plane.Z);
 
-            GuiController.Instance.UserVars.setValue("Avión respecto a X", x);
-            GuiController.Instance.UserVars.setValue("Avión respecto a Y", y);
-            GuiController.Instance.UserVars.setValue("Avión respecto a Z", z);
+            //GuiController.Instance.UserVars.setValue("Avión respecto a X", x);
+            //GuiController.Instance.UserVars.setValue("Avión respecto a Y", y);
+            //GuiController.Instance.UserVars.setValue("Avión respecto a Z", z);
 
             Vector3 camera;
             Vector3 target;
