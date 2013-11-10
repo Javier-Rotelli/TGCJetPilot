@@ -603,17 +603,17 @@ namespace AlumnoEjemplos.Jet_Pilot
                 nuevo_punto.Y = posiciones_centros[x].Y + generador.Next(15000) + 6000;
                 nuevo_punto.Z = posiciones_centros[x].Z;
                 posiciones_centros_nubes.Add(nuevo_punto);
-                avance_random = Convert.ToInt32(generador.Next(5)) + 10;
+                avance_random = Convert.ToInt32(generador.Next(5)) + 40;//ERA 10---------------
             }
-           
+
 
             //Carga de la nube
             //Activamos el renderizado customizado. De esta forma el framework nos delega control total sobre como dibujar en pantalla
             //La responsabilidad cae toda de nuestro lado
-            GuiController.Instance.CustomRenderEnabled = true;
+            //GuiController.Instance.CustomRenderEnabled = true;
 
             //Cargar shader de zbuffer
-            effect = TgcShaders.loadEffect(GuiController.Instance.ExamplesMediaDir + "Shaders\\EjemploGetZBuffer.fx");
+            //effect = TgcShaders.loadEffect(GuiController.Instance.ExamplesMediaDir + "Shaders\\EjemploGetZBuffer.fx");
 
             //Genero una instancia de loader
             TgcSceneLoader loader = new TgcSceneLoader();
@@ -621,12 +621,19 @@ namespace AlumnoEjemplos.Jet_Pilot
             //cargo la mesh de la nube
             nube = loader.loadSceneFromFile(GuiController.Instance.AlumnoEjemplosMediaDir + "Jet_Pilot\\" + "Heightmaps\\" + "nube-TgcScene.xml").Meshes[0];
 
-            //Seteo efecto zbuffer a la nube
-            nube.Effect = effect;
+            ////Seteo efecto zbuffer a la nube
+            //nube.Effect = effect;
 
             //Posicionamiento de la nube
             nube.Position = new Vector3(0, 0, 0);
+            nube.Scale = new Vector3(2,2,2);
 
+            //Seteo configuracion de la niebla
+            GuiController.Instance.Fog.StartDistance = 1;
+            GuiController.Instance.Fog.EndDistance = 1000;
+            GuiController.Instance.Fog.Density = 1;
+            GuiController.Instance.Fog.Color = Color.Gray;
+            GuiController.Instance.Fog.updateValues();
         }
 
 
@@ -704,62 +711,72 @@ namespace AlumnoEjemplos.Jet_Pilot
             {
                 posiciones_centros_nubes.Remove(posicion_a_borrar);
             }
-            
-
-            
-
-
-            //Renderizado de nubes
-            //Guardar render target original
-            pOldRT = d3dDevice.GetRenderTarget(0);
-
-            // 1) Mandar a dibujar todos los mesh para que se genere la textura de ZBuffer
-            d3dDevice.BeginScene();
-
-            //Seteamos la textura de zBuffer como render target (en lugar de dibujar a la pantalla)
-            Surface zBufferSurface = zBufferTexture.GetSurfaceLevel(0);
-            d3dDevice.SetRenderTarget(0, zBufferSurface);
-            d3dDevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Green, 1.0f, 0);
 
             ultimo_centro_de_posiciones_centros = 0;
             avance_random = 0;
 
-            //Render de cada nube
-            nube.Technique = "GenerateZBuffer";
-            foreach (Vector3 centro_nube in posiciones_centros_nubes)
-            {
-                
-                nube.Position = centro_nube;
-                nube.render();
-            }
-
-            zBufferSurface.Dispose();
-            d3dDevice.EndScene();
-
-
-
-            // 2) Volvemos a dibujar la escena y pasamos el ZBuffer al shader como una textura.
-            // Para este ejemplo particular utilizamos el valor de Z para alterar el color del pixel
-            d3dDevice.BeginScene();
-
-            //Restaurar render target original
-            d3dDevice.SetRenderTarget(0, pOldRT);
-            d3dDevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.GhostWhite, 1.0f, 0);
-
-            //Cargar textura de zBuffer al shader
-            effect.SetValue("texZBuffer", zBufferTexture);
-            effect.SetValue("screenDimensions", new float[] { d3dDevice.Viewport.Width, d3dDevice.Viewport.Height });
-
-
-            //Render de cada mesh
-            nube.Technique = "AlterColorByDepth";
+            GuiController.Instance.Fog.Enabled = true;
+            GuiController.Instance.Fog.updateValues();
             foreach (Vector3 centro_nube in posiciones_centros_nubes)
             {
                 nube.Position = centro_nube;
                 nube.render();
             }
+            GuiController.Instance.Fog.Enabled = false;
+            GuiController.Instance.Fog.updateValues();
 
-           d3dDevice.EndScene();
+
+            ////Renderizado de nubes
+            ////Guardar render target original
+            //pOldRT = d3dDevice.GetRenderTarget(0);
+
+            //// 1) Mandar a dibujar todos los mesh para que se genere la textura de ZBuffer
+            //d3dDevice.BeginScene();
+
+            ////Seteamos la textura de zBuffer como render target (en lugar de dibujar a la pantalla)
+            //Surface zBufferSurface = zBufferTexture.GetSurfaceLevel(0);
+            //d3dDevice.SetRenderTarget(0, zBufferSurface);
+            //d3dDevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Green, 1.0f, 0);
+
+            //ultimo_centro_de_posiciones_centros = 0;
+            //avance_random = 0;
+
+            ////Render de cada nube
+            //nube.Technique = "GenerateZBuffer";
+            //foreach (Vector3 centro_nube in posiciones_centros_nubes)
+            //{
+
+            //    nube.Position = centro_nube;
+            //    nube.render();
+            //}
+
+            //zBufferSurface.Dispose();
+            //d3dDevice.EndScene();
+
+
+
+            //// 2) Volvemos a dibujar la escena y pasamos el ZBuffer al shader como una textura.
+            //// Para este ejemplo particular utilizamos el valor de Z para alterar el color del pixel
+            //d3dDevice.BeginScene();
+
+            ////Restaurar render target original
+            //d3dDevice.SetRenderTarget(0, pOldRT);
+            //d3dDevice.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.GhostWhite, 1.0f, 0);
+
+            ////Cargar textura de zBuffer al shader
+            //effect.SetValue("texZBuffer", zBufferTexture);
+            //effect.SetValue("screenDimensions", new float[] { d3dDevice.Viewport.Width, d3dDevice.Viewport.Height });
+
+
+            ////Render de cada mesh
+            //nube.Technique = "AlterColorByDepth";
+            //foreach (Vector3 centro_nube in posiciones_centros_nubes)
+            //{
+            //    nube.Position = centro_nube;
+            //    nube.render();
+            //}
+
+            //d3dDevice.EndScene();
 
            //renderizo terrenos de alta, media y baja calidad de acuerdo a la distancia a la que se encuentren de la proyeccion de la camara en el plano xz
            //centros_terrains_colisionables.Clear();
