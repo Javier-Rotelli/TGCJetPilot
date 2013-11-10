@@ -37,14 +37,14 @@ namespace AlumnoEjemplos.Jet_Pilot
             centros_probables = new List<Vector3>();
         }
 
-        public bool colisionar(TgcMesh objeto,List<Vector3> centros)
+        public bool colisionar(TgcBoundingBox objeto,List<Vector3> centros)
         {
             if (objeto.Position.Y - (centros[0].Y + escalaY ) - tolerancia > EPSILON)
             {//si esta lejos en el eje y, no tiene sentido testear lo demas
-                objeto.BoundingBox.setRenderColor(Color.Yellow);
+                objeto.setRenderColor(Color.Yellow);
                 return false;
             }
-            objeto.BoundingBox.setRenderColor(Color.Red);
+            objeto.setRenderColor(Color.Red);
             centros_probables.Clear();
             foreach (Vector3 centro in centros)
             {
@@ -58,13 +58,13 @@ namespace AlumnoEjemplos.Jet_Pilot
             //veo si colisionan los terrenos
             Vector3 nuevaPosicion;
             List<Vector3> verticesEnEsfera = new List<Vector3>();
-            TgcBoundingBox bounding = objeto.BoundingBox.clone();
+            TgcBoundingBox bounding = objeto.clone();
             foreach (Vector3 centro in centros_probables)
             {
                 //desplazo el avion en vez del terreno para testear colisiones
                 nuevaPosicion = Vector3.Subtract(objeto.Position,centro);
                 
-                bounding.scaleTranslate(Vector3.Multiply(centro,-1f),new Vector3(1,1,1));
+                bounding.move(Vector3.Multiply(centro,-1f));
                 verticesEnEsfera.Clear();
                 TgcBoundingSphere esfera = new TgcBoundingSphere(nuevaPosicion,tolerancia);
                 Vector3 colision = new Vector3();
@@ -72,7 +72,7 @@ namespace AlumnoEjemplos.Jet_Pilot
                 {
                     if (TgcCollisionUtils.testSphereTriangle(esfera, verticesTerreno[i].Position, verticesTerreno[i + 1].Position, verticesTerreno[i + 2].Position,out colision))
                     {
-                      //  if (TgcCollisionUtils.testTriangleAABB( verticesTerreno[i].Position, verticesTerreno[i + 1].Position, verticesTerreno[i + 2].Position,bounding))
+                        if (TgcCollisionUtils.testTriangleAABB( verticesTerreno[i].Position, verticesTerreno[i + 1].Position, verticesTerreno[i + 2].Position,bounding))
                         {
                             return true;
                         }

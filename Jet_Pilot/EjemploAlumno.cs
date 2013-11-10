@@ -105,8 +105,9 @@ namespace AlumnoEjemplos.Jet_Pilot
         Random generador = new Random();
 
         //Colisiones
-        //Colisionador colisionador;
+        Colisionador colisionador;
         float[] altura_terrenos;
+        private List<Vector3> centros_terrains_colisionables;
 
         
 
@@ -148,7 +149,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             initPlane();
             initTerrainAndClouds();
             initSkybox();
-            //initColisionador();
+            initColisionador();
             initMsjs();
         }
 
@@ -179,7 +180,7 @@ namespace AlumnoEjemplos.Jet_Pilot
                     renderTerrainAndClouds(elapsedTime);
                     
                     renderPlane(elapsedTime);
-
+                    updateColision();
                     renderSkybox(elapsedTime);
 
                                  
@@ -232,7 +233,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             initPlane();
             posiciones_centros.Clear();
             initTerrainAndClouds();
-            meshes.Clear();
+            //meshes.Clear();
             initSkybox();
         }
 
@@ -503,7 +504,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             ScaleXZ_lq = (ScaleXZ_mq * 2) + 5f;
 
 
-            currentScaleY = 1.3f;
+            currentScaleY = 5.3f;
 
 
             //Path de Textura default del terreno y Modifier para cambiarla
@@ -779,8 +780,8 @@ namespace AlumnoEjemplos.Jet_Pilot
             //d3dDevice.EndScene();
 
            //renderizo terrenos de alta, media y baja calidad de acuerdo a la distancia a la que se encuentren de la proyeccion de la camara en el plano xz
-           //centros_terrains_colisionables.Clear();
-           //int i = 0;
+           centros_terrains_colisionables.Clear();
+           int i = 0;
 
            //Renderizado de terreno
            foreach (Vector3 posicion in posiciones_centros)
@@ -794,6 +795,7 @@ namespace AlumnoEjemplos.Jet_Pilot
                        altura_terrenos.SetValue(posicion.Y, i);
                    }
                    i += 1;*/
+                   centros_terrains_colisionables.Add(posicion);
                    //terrain_hq.render();
                }
                else
@@ -850,6 +852,7 @@ namespace AlumnoEjemplos.Jet_Pilot
                 GuiController.Instance.Modifiers.addBoolean("BoundingBox Avión", "Activado", false);
                 GuiController.Instance.Modifiers.addBoolean("BoundingBox Calaveras", "Activado", false);
                 GuiController.Instance.Modifiers.addInt("Cantidad de objetivos", 0, 100, 10);
+                GuiController.Instance.Modifiers.addVertex3f("lightPos", new Vector3(-5000, -5000, -5000), new Vector3(5000, 8000, 5000), new Vector3(0, 4750, -2500));
 
                 // Crear UserVars
                 GuiController.Instance.UserVars.addVar("Posición en X");
@@ -860,8 +863,7 @@ namespace AlumnoEjemplos.Jet_Pilot
                 GuiController.Instance.UserVars.addVar("Avión respecto a Y");
                 GuiController.Instance.UserVars.addVar("Avión respecto a Z");
             }
-
-            GuiController.Instance.Modifiers.addVertex3f("lightPos", new Vector3(-5000, -5000, -5000), new Vector3(5000, 8000, 5000), new Vector3(0, 4750, -2500));
+            
             avion_inicializado = true;
             ResetPlane();
         }
@@ -987,24 +989,28 @@ namespace AlumnoEjemplos.Jet_Pilot
 
         //colisionador
 
-        //private void initColisionador()
-        //{
-        //    centros_terrains_colisionables = new List<Vector3>();
-        //    colisionador = new Colisionador(terrain_hq, width, currentScaleY);
-        //}
+        private void initColisionador()
+        {
+            centros_terrains_colisionables = new List<Vector3>();
+            colisionador = new Colisionador(terrain_hq, width, currentScaleY);
+        }
 
-        //private void updateColision()
-        //{
-        //    //hago colisionar el avion
-        //    if (colisionador.colisionar(player.getMesh(), centros_terrains_colisionables))
-        //        ResetPlane();
-        //}
+        private void updateColision()
+        {
+            //hago colisionar el avion
+            if (colisionador.colisionar(player.getMesh().BoundingBox, centros_terrains_colisionables))
+            {
+                mostrar_msj = true;
+                hora_choque = DateTime.Now;
+                reset();
+            }
+        }
 
-
+        /*
         private void initColisionador() {
             altura_terrenos = new float[9];
         }
-
+        *//*
         private void updateColision(){
 
             bool choca = false;
@@ -1030,7 +1036,7 @@ namespace AlumnoEjemplos.Jet_Pilot
                 //System.Threading.Thread.Sleep(200);
             }
 
-        }
+        }*/
 
 
         //Metodos para el Skybox

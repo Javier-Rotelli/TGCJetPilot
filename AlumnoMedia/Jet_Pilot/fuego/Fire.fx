@@ -1,6 +1,19 @@
-float4 layer_speed = float4( 0.69, 0.52, 0.75, 1.00 );
 float time;
 
+//valores vanilla
+float4 layer_speed = float4( 0.69, 0.52, 0.75, 1.00 );
+float distortion_amount2 = float( 0.07 );
+float4 height_attenuation = float4( 0.44, 0.29, 0.00, 1.00 );
+float distortion_amount1 = float( 0.09 );
+float distortion_amount0 = float( 0.12 );
+
+/*
+float4 layer_speed = float4( 0.99, 0.03, 0.16, 1.00 );
+float distortion_amount2 = float( 0.00 );
+float4 height_attenuation = float4( 0.00, 1.00, 0.00, 1.00 );
+float distortion_amount1 = float( 0.08 );
+float distortion_amount0 = float( 0.02 );
+*/
 struct VS_OUTPUT
 {
    float4 Pos       : POSITION;
@@ -34,14 +47,6 @@ VS_OUTPUT vs_main_fire (float4 vPosition: POSITION, float3 vTexCoord0 : TEXCOORD
 
    return Out;
 }
-
-
-
-
-float distortion_amount2 = float( 0.07 );
-float4 height_attenuation = float4( 0.44, 0.29, 0.00, 1.00 );
-float distortion_amount1 = float( 0.09 );
-float distortion_amount0 = float( 0.12 );
 
 texture fire_base_Tex;
 
@@ -103,7 +108,9 @@ float4 ps_main_fire (float4 tc0 : TEXCOORD0, float4 tc1 : TEXCOORD1, float4 tc2 
    float4 base = tex2D(fire_base, perturbedBaseCoords);
    float4 opacity = tex2D(fire_opacity, perturbedBaseCoords);
 
-   return base * opacity;
+   base.a = ( opacity.r + opacity.g + opacity.b ) /3;
+
+   return base;
 }
 
 
