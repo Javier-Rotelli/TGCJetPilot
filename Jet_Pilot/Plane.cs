@@ -409,5 +409,10 @@ namespace AlumnoEjemplos.Jet_Pilot
 
 			return r;
 		}
+
+        public void close() {
+            plane.dispose();
+            exhaust.dispose();
+        }
     }
 }
