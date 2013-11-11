@@ -78,9 +78,13 @@ namespace AlumnoEjemplos.Jet_Pilot
         //Varibles de mensajes por pantalla
         private TgcText2d Msj_Choque;
         private TgcText2d Msj_Triunfo;
+        private TgcText2d Msj_Advertencia;
         DateTime hora_choque;
         DateTime hora_trunfo;
-        bool mostrar_msj = false;
+        DateTime hora_advertencia;
+        bool mostrar_msj_choque = false;
+        bool mostrar_msj_advertencia = false;
+        bool mostrar_msj_triunfo = true;
 
         //Variables del modo cazar globos
         bool modo_capturar_globos = false;
@@ -198,25 +202,38 @@ namespace AlumnoEjemplos.Jet_Pilot
                         renderGlobos(elapsedTime);
                     }
 
-                    if (mostrar_msj)
+
+                    if (mostrar_msj_choque)
                     {
                         if (DateTime.Now.Subtract(hora_choque).Seconds <= 2)
                         {
                             Msj_Choque.render();
                         }
-                        else
-                        {
-
-                            if (DateTime.Now.Subtract(hora_trunfo).Seconds <= 2)
-                            {
-                                Msj_Triunfo.render();
-                            }
-                            else
-                            {
-                                mostrar_msj = false;
-                            }
+                        else {
+                            mostrar_msj_choque = false;
                         }
                     }
+
+                    if (mostrar_msj_triunfo){
+                        if (DateTime.Now.Subtract(hora_trunfo).Seconds <= 2)
+                        {
+                            Msj_Triunfo.render();
+                        }
+                        else {
+                            mostrar_msj_triunfo = false;
+                        }
+                    }
+
+                    if (mostrar_msj_advertencia){
+
+                        if (DateTime.Now.Subtract(hora_advertencia).Seconds <= 2)
+                        {
+                            Msj_Advertencia.render();
+                        }
+                        else {
+                            mostrar_msj_advertencia = false;
+                        }
+                    }                  
                 }
             }
         }
@@ -261,6 +278,12 @@ namespace AlumnoEjemplos.Jet_Pilot
             Msj_Triunfo.Position = new Point((int)player.GetPosition().X, altoPantalla / 3);
             Msj_Triunfo.Color = Color.DarkViolet;
             Msj_Triunfo.changeFont(new System.Drawing.Font("Cataclysmic", 30.0f));
+
+            Msj_Advertencia = new TgcText2d();
+            Msj_Advertencia.Text = "No vayas tan alto!";
+            Msj_Advertencia.Position = new Point((int)player.GetPosition().X, altoPantalla / 3);
+            Msj_Advertencia.Color = Color.DarkRed;
+            Msj_Advertencia.changeFont(new System.Drawing.Font("Cataclysmic", 30.0f));
         }
 
 
@@ -990,6 +1013,20 @@ namespace AlumnoEjemplos.Jet_Pilot
             cam.SetCenterTargetUp(camera, target, y, true);
             cam.updateViewMatrix(d3dDevice);
 
+            if (player.GetPosition().Y >= 8000) {
+                mostrar_msj_advertencia = true;
+                hora_advertencia = DateTime.Now;
+                if (player.GetPosition().Y >= 10000) {
+                    motor.stop();
+                    motor.closeFile();
+                    sound = GuiController.Instance.Mp3Player;
+                    sound.FileName = GuiController.Instance.AlumnoEjemplosMediaDir +
+                    "Jet_Pilot\\Sonido\\Motor_Apagandose.mp3";
+                    sound.play(false);
+                    reset();
+                }
+            }
+
         }
 
         /// <param name="dt">Tiempo desde la última ejecución</param>
@@ -1014,7 +1051,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             //hago colisionar el avion
             if (colisionador.colisionar(player.getMesh().BoundingBox, centros_terrains_colisionables))
             {
-                mostrar_msj = true;
+            mostrar_msj_choque = true;
                 hora_choque = DateTime.Now;
                 motor.stop();
                 motor.closeFile();
@@ -1022,7 +1059,6 @@ namespace AlumnoEjemplos.Jet_Pilot
                 sound.FileName = GuiController.Instance.AlumnoEjemplosMediaDir +
                 "Jet_Pilot\\Sonido\\Motor_Apagandose.mp3";
                 sound.play(false);
-                mostrar_msj = true;
                 reset();
             }
         }
@@ -1270,7 +1306,7 @@ namespace AlumnoEjemplos.Jet_Pilot
                         if (Score == cantidad_globos)
                         { //Si completé el nivel debo mostrar msj de felicitaciones
                             hora_trunfo = DateTime.Now;
-                            mostrar_msj = true;
+                            mostrar_msj_triunfo = true;
                             //sound = GuiController.Instance.Mp3Player;
                             sound.closeFile();
                             sound.FileName = GuiController.Instance.AlumnoEjemplosMediaDir +
