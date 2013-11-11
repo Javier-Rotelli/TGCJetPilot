@@ -791,7 +791,7 @@ namespace AlumnoEjemplos.Jet_Pilot
 
             //renderizo terrenos de alta, media y baja calidad de acuerdo a la distancia a la que se encuentren de la proyeccion de la camara en el plano xz
            centros_terrains_colisionables.Clear();
-           int i = 0;
+           //int i = 0;
 
             //Renderizado de terreno
             foreach (Vector3 posicion in posiciones_centros)
@@ -799,12 +799,12 @@ namespace AlumnoEjemplos.Jet_Pilot
                 if (dist_menor_a_n_width(proy_pos_actual, posicion, 2))
                 {
                     terrain_hq.render(posicion);
-
+                    /*
                     if (i <= 8)
                     {
                         altura_terrenos.SetValue(posicion.Y, i);
                     }
-                    i += 1;
+                    i += 1;*/
                    centros_terrains_colisionables.Add(posicion);
                     //terrain_hq.render();
                 }
