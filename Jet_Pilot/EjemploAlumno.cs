@@ -92,7 +92,7 @@ namespace AlumnoEjemplos.Jet_Pilot
         private bool BBGlobos = false;
 
         //Variables Previas Skybox
-        List<TgcMesh> nube;
+        TgcMesh nube;
         List<TgcMesh> meshes;
         Texture zBufferTexture;
         Microsoft.DirectX.Direct3D.Effect effect;
@@ -103,7 +103,6 @@ namespace AlumnoEjemplos.Jet_Pilot
         int altoPantalla = GuiController.Instance.Panel3d.Height;
         bool skybox_inicializado = false;
         Random generador = new Random();
-        List<Vector3> distancias;
 
         //Colisiones
         Colisionador colisionador;
@@ -481,10 +480,10 @@ namespace AlumnoEjemplos.Jet_Pilot
                     Vector3 _1_ = new Vector3();
                     _1_.Z = nuevo_centro.Z;
                     _1_.X = nuevo_centro.X;
-                    _1_.Y = nuevo_centro.Y + generador.Next(60000) + 5000;
+                    _1_.Y = nuevo_centro.Y + generador.Next(15000) + 6000;
                     posiciones_centros_nubes.Add(_1_);
                 }
-                avance_random = Convert.ToInt32(generador.Next(10)) + 70;
+                avance_random = Convert.ToInt32(generador.Next(10)) + 20;
             }
             else
             {
@@ -605,7 +604,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             }
 
             terreno_inicializado = true;
-            
+
             //Generar lista de posiciones de centros de nubes inicial
             posiciones_centros_nubes = new List<Vector3>();
             for (int x = 0; x < posiciones_centros.Count; x = x + avance_random)
@@ -617,7 +616,7 @@ namespace AlumnoEjemplos.Jet_Pilot
                 posiciones_centros_nubes.Add(nuevo_punto);
                 avance_random = Convert.ToInt32(generador.Next(5)) + 40;//ERA 10---------------
             }
-            
+
 
             //Carga de la nube
             //Activamos el renderizado customizado. De esta forma el framework nos delega control total sobre como dibujar en pantalla
@@ -631,38 +630,15 @@ namespace AlumnoEjemplos.Jet_Pilot
             TgcSceneLoader loader = new TgcSceneLoader();
 
             //cargo la mesh de la nube
-            nube = loader.loadSceneFromFile(GuiController.Instance.AlumnoEjemplosMediaDir + "Jet_Pilot\\" + "Heightmaps\\" + "nube-TgcScene.xml").Meshes;
-
-            //Posicionamiento de la nube
-            Vector3 pos_mesh_sub_cero,distancia_al_mesh_sub_cero;
-            pos_mesh_sub_cero = nube[0].Position;
-
-            distancias=new List<Vector3>();
-
-            distancias.Add(new Vector3(0, 0, 0));
-            for (int i =1; i<nube.Count;i++) 
-            {
-                distancia_al_mesh_sub_cero = nube[i].Position - pos_mesh_sub_cero;
-                distancias.Add(distancia_al_mesh_sub_cero);
-            }
-            
-            int index=0;
-
-            foreach (TgcMesh malla_individual in nube)
-            {
-                malla_individual.Position = new Vector3(0, 0, 0) + distancias[index];
-                malla_individual.Scale = new Vector3(15, 15, 15);
-                index++;
-            }
+            nube = loader.loadSceneFromFile(GuiController.Instance.AlumnoEjemplosMediaDir + "Jet_Pilot\\" + "Heightmaps\\" + "nube-TgcScene.xml").Meshes[0];
 
             ////Seteo efecto zbuffer a la nube
             //nube.Effect = effect;
-            
-            /*
+
             //Posicionamiento de la nube
             nube.Position = new Vector3(0, 0, 0);
             nube.Scale = new Vector3(2, 2, 2);
-*/
+
             //Seteo configuracion de la niebla
             GuiController.Instance.Fog.StartDistance = 1;
             GuiController.Instance.Fog.EndDistance = 1000;
@@ -749,25 +725,13 @@ namespace AlumnoEjemplos.Jet_Pilot
 
             ultimo_centro_de_posiciones_centros = 0;
             avance_random = 0;
-            
-            pos_actual = player.GetPosition();
-            
+
             GuiController.Instance.Fog.Enabled = true;
             GuiController.Instance.Fog.updateValues();
             foreach (Vector3 centro_nube in posiciones_centros_nubes)
             {
-                if (dist_menor_a_n_width(pos_actual, centro_nube, 8))
-                {
-                    GuiController.Instance.Fog.Enabled = false;
-                    GuiController.Instance.Fog.updateValues();
-                    render_nube(centro_nube);
-                    GuiController.Instance.Fog.Enabled = true;
-                    GuiController.Instance.Fog.updateValues();
-                }
-                else
-                {
-                    render_nube(centro_nube);
-                }
+                nube.Position = centro_nube;
+                nube.render();
             }
             GuiController.Instance.Fog.Enabled = false;
             GuiController.Instance.Fog.updateValues();
@@ -828,7 +792,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             //renderizo terrenos de alta, media y baja calidad de acuerdo a la distancia a la que se encuentren de la proyeccion de la camara en el plano xz
            centros_terrains_colisionables.Clear();
            //int i = 0;
-           altura_terrenos = new float[9];
+
             //Renderizado de terreno
             foreach (Vector3 posicion in posiciones_centros)
             {
@@ -861,19 +825,6 @@ namespace AlumnoEjemplos.Jet_Pilot
             }
         }
 
-        public void render_nube(Vector3 position)
-        {
-            Vector3 distancia_relativa=position-new Vector3(0,0,0);
-            int index = 0;
-
-            foreach (TgcMesh malla_individual in nube)
-            {
-                malla_individual.Position = distancia_relativa + distancias[index];
-                index++;
-                malla_individual.render();
-            }
-        }
-        
         public void closeTerrain()
         {
             terrain_hq.dispose();
@@ -1250,7 +1201,8 @@ namespace AlumnoEjemplos.Jet_Pilot
                 pOldRT.Dispose();
                 zBufferTexture.Dispose();
                 skyBox2.dispose();
-                foreach (TgcMesh mesh in nube)
+                nube.dispose();
+                foreach (TgcMesh mesh in meshes)
                 {
                     mesh.dispose();
                 }
