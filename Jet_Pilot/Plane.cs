@@ -31,9 +31,6 @@ namespace AlumnoEjemplos.Jet_Pilot
         }
         public Vector3 lightPos { get; set; }
 
-		Vector3 deathPos;
-		bool dead;
-
         //variables para shaders
         private Effect efFuego;
         private Texture g_pRenderTargetFuego;
@@ -86,15 +83,12 @@ namespace AlumnoEjemplos.Jet_Pilot
 			m = Matrix.Identity;
 			plane.Transform = m;
           		exhaust.Transform = m;
-			SetPosition(new Vector3 (0, 1000.0f, 0));
+			SetPosition(new Vector3 (0, 1500.0f, 0));
 
-			dead = false;
 		}
 
 		public void Update(float dt)
 		{
-			if (dead) return;
-
             totalTime += dt;
 
 			// Mover el avion hacia donde esta apuntando

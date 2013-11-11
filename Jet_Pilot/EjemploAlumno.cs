@@ -199,8 +199,6 @@ namespace AlumnoEjemplos.Jet_Pilot
                         renderGlobos(elapsedTime);
                     }
 
-                    updateColision();
-
                     if (mostrar_msj)
                     {
                         if (DateTime.Now.Subtract(hora_choque).Seconds <= 2)
@@ -256,13 +254,13 @@ namespace AlumnoEjemplos.Jet_Pilot
             Msj_Choque = new TgcText2d();
             Msj_Choque.Text = "Guarda con el terreno capo!!";
             Msj_Choque.Position = new Point((int)player.GetPosition().X, altoPantalla / 3);
-            Msj_Choque.Color = Color.DarkCyan;
+            Msj_Choque.Color = Color.DarkRed;
             Msj_Choque.changeFont(new System.Drawing.Font("Cataclysmic", 30.0f));
 
             Msj_Triunfo = new TgcText2d();
             Msj_Triunfo.Text = "Felicitaciones has capturado todas las calaveras!!";
             Msj_Triunfo.Position = new Point((int)player.GetPosition().X, altoPantalla / 3);
-            Msj_Triunfo.Color = Color.DarkCyan;
+            Msj_Triunfo.Color = Color.DarkViolet;
             Msj_Triunfo.changeFont(new System.Drawing.Font("Cataclysmic", 30.0f));
         }
 
@@ -879,6 +877,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             terrain_hq.dispose();
             terrain_mq.dispose();
             terrain_lq.dispose();
+            terreno_inicializado = false;
         }
 
 
@@ -961,6 +960,7 @@ namespace AlumnoEjemplos.Jet_Pilot
         public void closePlane()
         {
             player.close();
+            avion_inicializado = false;
         }
 
         /// <param name="dt">Tiempo desde la última ejecución</param>
@@ -1065,6 +1065,13 @@ namespace AlumnoEjemplos.Jet_Pilot
             {
                 mostrar_msj = true;
                 hora_choque = DateTime.Now;
+                motor.stop();
+                motor.closeFile();
+                sound = GuiController.Instance.Mp3Player;
+                sound.FileName = GuiController.Instance.AlumnoEjemplosMediaDir +
+                "Jet_Pilot\\Sonido\\Motor_Apagandose.mp3";
+                sound.play(false);
+                mostrar_msj = true;
                 reset();
             }
         }
@@ -1259,6 +1266,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             {
 
             }
+            skybox_inicializado = false;
 
         }
 
@@ -1349,7 +1357,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             for (int i = 0; i <= (cantidad_globos - 1); ++i)
             {
                 numberx = generador.Next(10000);
-                numbery = generador.Next(10000) + 400; //Para que no toque el terreno
+                numbery = generador.Next(10000) + 1500; //Para que no toque el terreno
                 numberz = generador.Next(10000);
                 signox = generador.Next(100); //Para que me el signo de la componente en x (la función random sólo devuelve valores positivos)
                 signoz = generador.Next(100); //Para que me el signo de la componente en z (la función random sólo devuelve valores positivos)
@@ -1366,6 +1374,7 @@ namespace AlumnoEjemplos.Jet_Pilot
 
                 objetivos.SetValue(new Vector3(numberx, numbery, numberz), i);
             }
+            Score = 0;
         }
 
         private void quitarGlobo(int index)
