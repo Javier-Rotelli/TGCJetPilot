@@ -280,7 +280,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             Msj_Triunfo.changeFont(new System.Drawing.Font("Cataclysmic", 30.0f));
 
             Msj_Advertencia = new TgcText2d();
-            Msj_Advertencia.Text = "No vayas tan alto!";
+            Msj_Advertencia.Text = "No vayas tan alto, tu techo de vuelo es de 20.000 m!";
             Msj_Advertencia.Position = new Point((int)player.GetPosition().X, altoPantalla / 3);
             Msj_Advertencia.Color = Color.DarkRed;
             Msj_Advertencia.changeFont(new System.Drawing.Font("Cataclysmic", 30.0f));
@@ -501,10 +501,10 @@ namespace AlumnoEjemplos.Jet_Pilot
                     Vector3 _1_ = new Vector3();
                     _1_.Z = nuevo_centro.Z;
                     _1_.X = nuevo_centro.X;
-                    _1_.Y = nuevo_centro.Y + generador.Next(15000) + 6000;
+                    _1_.Y = nuevo_centro.Y + generador.Next(45000) + 6000;
                     posiciones_centros_nubes.Add(_1_);
                 }
-                avance_random = Convert.ToInt32(generador.Next(10)) + 20;
+                avance_random = Convert.ToInt32(generador.Next(10)) + 70;
             }
             else
             {
@@ -632,10 +632,10 @@ namespace AlumnoEjemplos.Jet_Pilot
             {
                 nuevo_punto = new Vector3();
                 nuevo_punto.X = posiciones_centros[x].X;
-                nuevo_punto.Y = posiciones_centros[x].Y + generador.Next(15000) + 6000;
+                nuevo_punto.Y = posiciones_centros[x].Y + generador.Next(45000) + 6000;
                 nuevo_punto.Z = posiciones_centros[x].Z;
                 posiciones_centros_nubes.Add(nuevo_punto);
-                avance_random = Convert.ToInt32(generador.Next(5)) + 40;//ERA 10---------------
+                avance_random = Convert.ToInt32(generador.Next(5)) + 70;//ERA 10---------------
             }
 
 
@@ -658,13 +658,13 @@ namespace AlumnoEjemplos.Jet_Pilot
 
             //Posicionamiento de la nube
             nube.Position = new Vector3(0, 0, 0);
-            nube.Scale = new Vector3(2, 2, 2);
+            nube.Scale = new Vector3(7, 7, 7);
 
             //Seteo configuracion de la niebla
             GuiController.Instance.Fog.StartDistance = 1;
             GuiController.Instance.Fog.EndDistance = 1000;
             GuiController.Instance.Fog.Density = 1;
-            GuiController.Instance.Fog.Color = Color.Gray;
+            GuiController.Instance.Fog.Color = Color.Honeydew;
             GuiController.Instance.Fog.updateValues();
         }
 
@@ -1013,10 +1013,10 @@ namespace AlumnoEjemplos.Jet_Pilot
             cam.SetCenterTargetUp(camera, target, y, true);
             cam.updateViewMatrix(d3dDevice);
 
-            if (player.GetPosition().Y >= 8000) {
+            if (player.GetPosition().Y >= 18000) {
                 mostrar_msj_advertencia = true;
                 hora_advertencia = DateTime.Now;
-                if (player.GetPosition().Y >= 10000) {
+                if (player.GetPosition().Y >= 20000) {
                     motor.stop();
                     motor.closeFile();
                     sound = GuiController.Instance.Mp3Player;
