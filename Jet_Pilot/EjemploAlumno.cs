@@ -812,7 +812,6 @@ namespace AlumnoEjemplos.Jet_Pilot
 
             //renderizo terrenos de alta, media y baja calidad de acuerdo a la distancia a la que se encuentren de la proyeccion de la camara en el plano xz
            centros_terrains_colisionables.Clear();
-           //int i = 0;
 
             //Renderizado de terreno
             foreach (Vector3 posicion in posiciones_centros)
@@ -820,12 +819,7 @@ namespace AlumnoEjemplos.Jet_Pilot
                 if (dist_menor_a_n_width(proy_pos_actual, posicion, 2))
                 {
                     terrain_hq.render(posicion);
-                    /*
-                    if (i <= 8)
-                    {
-                        altura_terrenos.SetValue(posicion.Y, i);
-                    }
-                    i += 1;*/
+
                    centros_terrains_colisionables.Add(posicion);
                     //terrain_hq.render();
                 }
@@ -892,9 +886,6 @@ namespace AlumnoEjemplos.Jet_Pilot
                 GuiController.Instance.UserVars.addVar("Posición en Y");
                 GuiController.Instance.UserVars.addVar("Posición en Z");
 
-                //GuiController.Instance.UserVars.addVar("Avión respecto a X");
-                //GuiController.Instance.UserVars.addVar("Avión respecto a Y");
-                //GuiController.Instance.UserVars.addVar("Avión respecto a Z");
                 GuiController.Instance.Modifiers.addVertex3f("lightPos", new Vector3(-5000, -5000, -5000), new Vector3(5000, 8000, 5000), new Vector3(0, 4750, -2500));
             }
             
@@ -1001,10 +992,6 @@ namespace AlumnoEjemplos.Jet_Pilot
             GuiController.Instance.UserVars.setValue("Posición en Y", plane.Y);
             GuiController.Instance.UserVars.setValue("Posición en Z", plane.Z);
 
-            //GuiController.Instance.UserVars.setValue("Avión respecto a X", x);
-            //GuiController.Instance.UserVars.setValue("Avión respecto a Y", y);
-            //GuiController.Instance.UserVars.setValue("Avión respecto a Z", z);
-
             Vector3 camera;
             Vector3 target;
 
@@ -1063,45 +1050,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             }
         }
 
-        /*
-        {
-            altura_terrenos = new float[9];
-        }
-        *//*
-        private void updateColision()
-        {
-
-            bool choca = false;
-
-            foreach (float altura in altura_terrenos)
-            {
-                float umbral = 300;
-                choca = false;
-
-                Vector3 pos_avion = player.GetPosition();
-
-                if ((pos_avion.Y - altura) <= umbral)
-                {
-                    choca = true;
-                    break;
-                }
-            }
-
-            if (choca)
-            {
-                motor.stop();
-                motor.closeFile();
-                sound = GuiController.Instance.Mp3Player;
-                sound.FileName = GuiController.Instance.AlumnoEjemplosMediaDir +
-                "Jet_Pilot\\Sonido\\Motor_Apagandose.mp3";
-                sound.play(false);
-                mostrar_msj = true;
-                hora_choque = DateTime.Now;
-                reset();
-                //System.Threading.Thread.Sleep(200);
-            }
-
-        }*/
+  
 
 
         //Metodos para el Skybox
@@ -1344,9 +1293,9 @@ namespace AlumnoEjemplos.Jet_Pilot
 
             for (int i = 0; i <= (cantidad_globos - 1); ++i)
             {
-                numberx = generador.Next(10000);
-                numbery = generador.Next(10000) + 1500; //Para que no toque el terreno
-                numberz = generador.Next(10000);
+                numberx = generador.Next(20000);
+                numbery = generador.Next(13500) + 1500; //Para que no toque el terreno
+                numberz = generador.Next(20000);
                 signox = generador.Next(100); //Para que me el signo de la componente en x (la función random sólo devuelve valores positivos)
                 signoz = generador.Next(100); //Para que me el signo de la componente en z (la función random sólo devuelve valores positivos)
 
