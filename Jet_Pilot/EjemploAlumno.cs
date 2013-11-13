@@ -664,7 +664,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             GuiController.Instance.Fog.StartDistance = 1;
             GuiController.Instance.Fog.EndDistance = 1000;
             GuiController.Instance.Fog.Density = 1;
-            GuiController.Instance.Fog.Color = Color.Honeydew;
+            GuiController.Instance.Fog.Color = Color.Gray;
             GuiController.Instance.Fog.updateValues();
         }
 
@@ -1057,40 +1057,13 @@ namespace AlumnoEjemplos.Jet_Pilot
 
         public void initSkybox()
         {
-            //GuiController.Instance: acceso principal a todas las herramientas del Framework
-
-            //Device de DirectX para crear primitivas
-            //Microsoft.DirectX.Direct3D.Device d3dDevice = GuiController.Instance.D3dDevice;
-
-            //Carpeta de archivos Media del alumno
-            // string alumnoMediaFolder = GuiController.Instance.AlumnoEjemplosMediaDir;
-
-            /////////////////CONFIGURAR CAMARA PRIMERA PERSONA//////////////////
-            ////Camara en primera persona, tipo videojuego FPS
-            ////Solo puede haber una camara habilitada a la vez. Al habilitar la camara FPS se deshabilita la camara rotacional
-            //////Por default la camara FPS viene desactivada
-            //GuiController.Instance.FpsCamera.Enable = true;
-            ////Configurar posicion y hacia donde se mira
-            //GuiController.Instance.FpsCamera.setCamera(new Vector3(anchoPantalla / 2, altoPantalla / 2, anchoPantalla / 2), new Vector3(0, 0, 0));
-
-            // string avionPath = GuiController.Instance.ExamplesMediaDir + "MeshCreator\\Meshes\\Vehiculos\\AvionCaza\\" + "AvionCaza-TgcScene.xml";
-
             //Activamos el renderizado customizado. De esta forma el framework nos delega control total sobre como dibujar en pantalla
-            //La responsabilidad cae toda de nuestro lado
             GuiController.Instance.CustomRenderEnabled = true;
 
             //Crear textura para almacenar el zBuffer. Es una textura que se usa como RenderTarget y que tiene un formato de 1 solo float de 32 bits.
             //En cada pixel no vamos a guardar un color sino el valor de Z de la escena
             //La creamos con un solo nivel de mipmap (el original)
             zBufferTexture = new Texture(d3dDevice, d3dDevice.Viewport.Width, d3dDevice.Viewport.Height, 1, Usage.RenderTarget, Format.R32F, Pool.Default);
-
-            //Posicionar el avion
-            //meshes[0].Position = new Vector3(anchoPantalla / 2, altoPantalla / 2, anchoPantalla / 2);
-
-
-            ////Camara en tercera persona que apunta al avion
-            //GuiController.Instance.ThirdPersonCamera.Enable = true;
-            //GuiController.Instance.ThirdPersonCamera.setCamera(meshes[0].Position, 20.0f, 150.0f);
 
             skyBox2 = new Skybox();
 
@@ -1124,61 +1097,13 @@ namespace AlumnoEjemplos.Jet_Pilot
             //Device de DirectX para renderizar
             Microsoft.DirectX.Direct3D.Device d3dDevice = GuiController.Instance.D3dDevice;
 
-            ////con esto la camara en 3ra persona sigue al avion y por ende el skybox lo acompa�a
-            //GuiController.Instance.ThirdPersonCamera.setCamera(meshes[0].Position, 20.0f, 150.0f);
-
-
             //Obtener valores de Modifiers
             float valorFloat = (float)GuiController.Instance.Modifiers["valorFloat"];
             string opcionElegida = (string)GuiController.Instance.Modifiers["valorIntervalo"];
             Vector3 valorVertice = (Vector3)GuiController.Instance.Modifiers["valorVertice"];
 
-            //foreach (TgcMesh nub in nubes)
-            //{
-            // nub.render();
-            //}
-
-            // nubes[0].Position = valorVertice;
-
-            //nubes[0].render();
-            //auto.render();
-
-            //nube.Position = valorVertice;
-
-            ///////////////INPUT//////////////////
-            //conviene deshabilitar ambas camaras para que no haya interferencia
-
-            ////Capturar Input teclado
-            //if (GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.DownArrow))
-            //{
-            // //se mueve para atras
-            // meshes[0].move(new Vector3(0, 0, 500 * elapsedTime));
-            //}
-
-            //if (GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.UpArrow))
-            //{
-            // //se mueve para adelante
-            // meshes[0].move(new Vector3(0, 0, -500 * elapsedTime));
-
-            //}
-
-            //if (GuiController.Instance.D3dInput.keyDown(Microsoft.DirectX.DirectInput.Key.LeftArrow))
-            //{
-            // //rota para el costado izquierdo
-            // meshes[0].rotateY(0.3f * elapsedTime);
-            // //meshes[0].moveOrientedY(50 * elapsedTime);
-            // // GuiController.Instance.ThirdPersonCamera.rotateY(0.3f * elapsedTime);
-            //}
-
-            ////Capturar Input Mouse
-            //if (GuiController.Instance.D3dInput.buttonPressed(TgcViewer.Utils.Input.TgcD3dInput.MouseButtons.BUTTON_LEFT))
-            //{
-            // //Boton izq apretado
-            //}
-
             skyBox2.renderSkybox(player.GetPosition());
-            //skyBox2.Render();
-
+           
             //Mostrar FPS
             d3dDevice.BeginScene();
             GuiController.Instance.Text3d.drawText("FPS: " + HighResolutionTimer.Instance.FramesPerSecond, 0, 0, Color.Yellow);
