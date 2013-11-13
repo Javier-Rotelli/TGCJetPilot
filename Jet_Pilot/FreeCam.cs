@@ -1,6 +1,8 @@
 ﻿using Microsoft.DirectX;
+using TgcViewer;
+using TgcViewer.Utils.Input;
 
-namespace TgcViewer.Utils.Input
+namespace AlumnoEjemplos.Jet_Pilot
 {
 	/// <summary>
 	/// Camara que permite rotar y hacer zoom alrededor de un objeto central

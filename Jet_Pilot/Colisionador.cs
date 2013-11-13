@@ -40,12 +40,13 @@ namespace AlumnoEjemplos.Jet_Pilot
         public bool colisionar(TgcBoundingBox objeto,List<Vector3> centros)
         {
             if (objeto.Position.Y - (centros[0].Y + escalaY ) - tolerancia > EPSILON)
-            {//si esta lejos en el eje y, no tiene sentido testear lo demas
+            {//si esta lejos en el eje y, no tiene sentido testear lo demas. 
                 objeto.setRenderColor(Color.Yellow);
                 return false;
             }
             objeto.setRenderColor(Color.Red);
             centros_probables.Clear();
+            if (objeto.Position.Y < 500) { return true; } //Si el avion avanza demasiado rápido  y no se llega a checkear la colisión
             foreach (Vector3 centro in centros)
             {
 

@@ -84,7 +84,7 @@ namespace AlumnoEjemplos.Jet_Pilot
         DateTime hora_advertencia;
         bool mostrar_msj_choque = false;
         bool mostrar_msj_advertencia = false;
-        bool mostrar_msj_triunfo = true;
+        bool mostrar_msj_triunfo = false;
 
         //Variables del modo cazar globos
         bool modo_capturar_globos = false;
@@ -1038,7 +1038,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             //hago colisionar el avion
             if (colisionador.colisionar(player.getMesh().BoundingBox, centros_terrains_colisionables))
             {
-            mostrar_msj_choque = true;
+                mostrar_msj_choque = true;
                 hora_choque = DateTime.Now;
                 motor.stop();
                 motor.closeFile();
@@ -1049,8 +1049,6 @@ namespace AlumnoEjemplos.Jet_Pilot
                 reset();
             }
         }
-
-  
 
 
         //Metodos para el Skybox
