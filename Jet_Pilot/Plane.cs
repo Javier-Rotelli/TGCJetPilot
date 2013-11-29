@@ -83,7 +83,7 @@ namespace AlumnoEjemplos.Jet_Pilot
 			m = Matrix.Identity;
 			plane.Transform = m;
           		exhaust.Transform = m;
-			SetPosition(new Vector3 (0, 1500.0f, 0));
+			SetPosition(new Vector3 (0, 1500f, 0));
 
 		}
 

@@ -40,13 +40,49 @@ namespace AlumnoEjemplos.Jet_Pilot
         Vector3 punto_para_proy, punto_proy_en_pl, vector_final;
 
         //Muestras de terreno de alta, media y baja calidad
-        Terrain terrain_hq, terrain_mq, terrain_lq;
+        List<Terrain> hq_terrains = new List<Terrain>();
+        List<Terrain> mq_terrains = new List<Terrain>();
+        List<Terrain> lq_terrains = new List<Terrain>();
 
-        //Esta es la lista de las posiciones que vana a ocupar los terrenos que posiblemente se renderizaran
-        List<Vector3> posiciones_centros;
+        List<string> texturas = new List<string>();
+        //Terrain terrain_hq, terrain_mq, terrain_lq;
+
+        //Esta es la lista de las posiciones que van a ocupar los terrenos que posiblemente se renderizaran
+        enum textures {sea, sea_to_sand, sand, sand_to_terrain, terrain}
+        
+        public struct tipo_posicion_con_index_heightmap {
+            public Vector3 posicion_centro;
+            public int index;
+
+            public void cargar_index(float ancho)
+            {
+                if (this.posicion_centro.Z < 0)
+                {
+                    this.index = (int)textures.sea;
+                }
+                else if (this.posicion_centro.Z == 0)
+                {
+                    this.index = (int)textures.sea_to_sand;
+                }
+                else if ((this.posicion_centro.Z > 0) && (this.posicion_centro.Z < 4 * ancho))
+                {
+                    this.index = (int)textures.sand;
+                }
+                else if (this.posicion_centro.Z == 4*ancho)
+                {
+                    this.index = (int)textures.sand_to_terrain;
+                }
+                else if (this.posicion_centro.Z > 4 * ancho)
+                {
+                    this.index = (int)textures.terrain;
+                }
+            }
+        }
+        
+        List<tipo_posicion_con_index_heightmap> posiciones_centros;
 
         string currentHeightmap_hq, currentHeightmap_mq, currentHeightmap_lq;
-        string currentTexture;
+        string current_sea_texture, current_sea_to_sand_texture, current_sand_texture, current_sand_to_terrain_texture, current_terrain_texture;
         float ScaleXZ_hq, ScaleXZ_mq, ScaleXZ_lq;
         float currentScaleY;
         bool terreno_inicializado = false;
@@ -469,14 +505,30 @@ namespace AlumnoEjemplos.Jet_Pilot
 
 
 
-
+            Boolean ya_existe_el_centro=false;
             foreach (Vector3 nueva_pos in posiciones_a_analizar)
             {
 
-                if (!posiciones_centros.Contains(nueva_pos))
+                foreach ( tipo_posicion_con_index_heightmap pos_centro in posiciones_centros)
                 {
-                    posiciones_centros.Add(nueva_pos);
+
+                    if (pos_centro.posicion_centro == nueva_pos) 
+                    {
+                        ya_existe_el_centro = true;
+                        break;
+                    }
+                }
+                if (!ya_existe_el_centro)
+                {
+                    tipo_posicion_con_index_heightmap nuevo_centro = new tipo_posicion_con_index_heightmap();
+                    nuevo_centro.posicion_centro = nueva_pos;
+                    nuevo_centro.cargar_index(width);
+                    posiciones_centros.Add(nuevo_centro);
                     analisis_agregado_a_centros_nube(nueva_pos);
+                }
+                else
+                {
+                    ya_existe_el_centro = false;
                 }
             }
         }
@@ -513,6 +565,22 @@ namespace AlumnoEjemplos.Jet_Pilot
 
         }
 
+        //Si se quiere cargar la lista de terrenos hq, se manda la lista hq_terrain y el heightmap hq
+        public void agregar_terrenos_en_lista_de_calidad(List<Terrain> lista, string heightmap, float escalaXZ, float escalaY)
+        {
+            Terrain Loader;
+
+            foreach (string textura in texturas)
+            {
+                Loader = new Terrain();
+                Loader.loadHeightmap(heightmap, escalaXZ, escalaY, new Vector3(0, 0, 0));
+                Loader.loadTexture(textura);
+                lista.Add(Loader);
+            }
+            
+        }
+
+
         public void initTerrainAndClouds()
         {
             Microsoft.DirectX.Direct3D.Device d3dDevice = GuiController.Instance.D3dDevice;
@@ -530,20 +598,34 @@ namespace AlumnoEjemplos.Jet_Pilot
 
 
             //Escala del mapa
-            ScaleXZ_hq = 40f;
+            ScaleXZ_hq = 160f;
             ScaleXZ_mq = (ScaleXZ_hq * 2) + 0.7f;
             ScaleXZ_lq = (ScaleXZ_mq * 2) + 5f;
 
 
-            currentScaleY = 5.3f;
+            currentScaleY = 3f;
 
 
             //Path de Textura default del terreno y Modifier para cambiarla
-            currentTexture = GuiController.Instance.AlumnoEjemplosMediaDir + "Jet_Pilot\\" + "Heightmaps\\" + "TerrainTexture.jpg";
+//            currentTexture = GuiController.Instance.AlumnoEjemplosMediaDir + "Jet_Pilot\\" + "Heightmaps\\" + "TerrainTexture.jpg";
+
+            current_sea_texture = GuiController.Instance.AlumnoEjemplosMediaDir + "Jet_Pilot\\" + "Heightmaps\\" + "sea.jpg";
+            current_sea_to_sand_texture = GuiController.Instance.AlumnoEjemplosMediaDir + "Jet_Pilot\\" + "Heightmaps\\" + "sea_to_sand.jpg";
+            current_sand_texture = GuiController.Instance.AlumnoEjemplosMediaDir + "Jet_Pilot\\" + "Heightmaps\\" + "sand.jpg";
+            current_sand_to_terrain_texture= GuiController.Instance.AlumnoEjemplosMediaDir + "Jet_Pilot\\" + "Heightmaps\\" + "sand_to_terrain.jpg";
+            current_terrain_texture = GuiController.Instance.AlumnoEjemplosMediaDir + "Jet_Pilot\\" + "Heightmaps\\" + "terrain.jpg";
+            
+            //Cargo las texturas en una lista para poder inicializar los terrenos de forma mas sencilla
+            texturas.Add(current_sea_texture);
+            texturas.Add(current_sea_to_sand_texture);
+            texturas.Add(current_sand_texture);
+            texturas.Add(current_sand_to_terrain_texture);
+            texturas.Add(current_terrain_texture);
+
 
             if (!terreno_inicializado)
             {
-                GuiController.Instance.Modifiers.addTexture("texture", currentTexture);
+                GuiController.Instance.Modifiers.addTexture("texture", current_terrain_texture);
             }
 
 
@@ -557,25 +639,17 @@ namespace AlumnoEjemplos.Jet_Pilot
             Bitmap bitmap_lq = (Bitmap)Bitmap.FromFile(currentHeightmap_lq);
 
             //Este es el ancho de referencia gral
-            width = ((bitmap_hq.Size.Width * ScaleXZ_hq) - 85);
+            width = ((bitmap_hq.Size.Width * ScaleXZ_hq) - 370);
 
             //No se van a renderizar mas de 5 terrenos"hacia adelante". Se utiliza para hallar intersecciones con el plano
-            valor_grande = 5 * width;
+            //valor_grande = 5 * width;
 
-            terrain_hq = new Terrain();
-            terrain_hq.loadHeightmap(currentHeightmap_hq, ScaleXZ_hq, currentScaleY, new Vector3(0, 0, 0));
-            terrain_hq.loadTexture(currentTexture);
+            
+            agregar_terrenos_en_lista_de_calidad(hq_terrains,currentHeightmap_hq,ScaleXZ_hq,currentScaleY);
 
+            agregar_terrenos_en_lista_de_calidad(mq_terrains, currentHeightmap_mq, ScaleXZ_mq, currentScaleY);
 
-            terrain_mq = new Terrain();
-            terrain_mq.loadHeightmap(currentHeightmap_mq, ScaleXZ_mq, currentScaleY, new Vector3(0, 0, 0));
-            terrain_mq.loadTexture(currentTexture);
-
-
-            terrain_lq = new Terrain();
-            terrain_lq.loadHeightmap(currentHeightmap_lq, ScaleXZ_lq, currentScaleY, new Vector3(0, 0, 0));
-            terrain_lq.loadTexture(currentTexture);
-
+            agregar_terrenos_en_lista_de_calidad(lq_terrains, currentHeightmap_lq, ScaleXZ_lq, currentScaleY);
 
 
             //Hay que llamar primero a initPlane para que esto funcione correctamente
@@ -591,7 +665,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             //Generar lista de posiciones de centros de terreno inicial
             Vector3 nuevo_punto;
             float inner_width = width;
-            posiciones_centros = new List<Vector3>();
+            posiciones_centros = new List<tipo_posicion_con_index_heightmap>();
             posiciones_centros_nubes = new List<Vector3>();
 
             pos_original.X = pos_original.X - (width * 9);
@@ -600,7 +674,12 @@ namespace AlumnoEjemplos.Jet_Pilot
 
                 nuevo_punto = new Vector3();
                 nuevo_punto = pos_original;
-                posiciones_centros.Add(nuevo_punto);
+                tipo_posicion_con_index_heightmap nuevo_centro = new tipo_posicion_con_index_heightmap();
+                nuevo_centro.posicion_centro = nuevo_punto;
+                nuevo_centro.cargar_index(width);
+                posiciones_centros.Add(nuevo_centro);
+                analisis_agregado_a_centros_nube(nuevo_punto);
+                
 
 
                 for (int j = 0; j < 9; j++)
@@ -609,13 +688,19 @@ namespace AlumnoEjemplos.Jet_Pilot
                     nuevo_punto = new Vector3();
                     nuevo_punto = pos_original;
                     nuevo_punto.Z = pos_original.Z + inner_width;
-                    posiciones_centros.Add(nuevo_punto);
+                    nuevo_centro = new tipo_posicion_con_index_heightmap();
+                    nuevo_centro.posicion_centro = nuevo_punto;
+                    nuevo_centro.cargar_index(width);
+                    posiciones_centros.Add(nuevo_centro);
                     analisis_agregado_a_centros_nube(nuevo_punto);
 
                     nuevo_punto = new Vector3();
                     nuevo_punto = pos_original;
                     nuevo_punto.Z = pos_original.Z - inner_width;
-                    posiciones_centros.Add(nuevo_punto);
+                    nuevo_centro = new tipo_posicion_con_index_heightmap();
+                    nuevo_centro.posicion_centro = nuevo_punto;
+                    nuevo_centro.cargar_index(width);
+                    posiciones_centros.Add(nuevo_centro);
                     analisis_agregado_a_centros_nube(nuevo_punto);
 
                     inner_width = inner_width + width;
@@ -631,9 +716,9 @@ namespace AlumnoEjemplos.Jet_Pilot
             for (int x = 0; x < posiciones_centros.Count; x = x + avance_random)
             {
                 nuevo_punto = new Vector3();
-                nuevo_punto.X = posiciones_centros[x].X;
-                nuevo_punto.Y = posiciones_centros[x].Y + generador.Next(45000) + 6000;
-                nuevo_punto.Z = posiciones_centros[x].Z;
+                nuevo_punto.X = posiciones_centros[x].posicion_centro.X;
+                nuevo_punto.Y = posiciones_centros[x].posicion_centro.Y + generador.Next(45000) + 6000;
+                nuevo_punto.Z = posiciones_centros[x].posicion_centro.Z;
                 posiciones_centros_nubes.Add(nuevo_punto);
                 avance_random = Convert.ToInt32(generador.Next(5)) + 70;//ERA 10---------------
             }
@@ -678,6 +763,8 @@ namespace AlumnoEjemplos.Jet_Pilot
             pos_actual = cam.getPosition();
             look_at_actual = cam.getLookAt();
 
+            GuiController.Instance.ThirdPersonCamera.setCamera(cam.getPosition(), 0,0);
+            
             normal_actual = look_at_actual - pos_actual;
 
             //plano_vision = Plane.FromPointNormal(pos_actual, normal_actual);
@@ -685,39 +772,40 @@ namespace AlumnoEjemplos.Jet_Pilot
             proy_pos_actual = pos_actual;
             proy_pos_actual.Y = 0;
 
-            List<Vector3> a_borrar = new List<Vector3>();
+            List<tipo_posicion_con_index_heightmap> centros_terreno_a_borrar = new List<tipo_posicion_con_index_heightmap>();
             List<Vector3> a_revisar_para_generar = new List<Vector3>();
+            List<Vector3> a_borrar = new List<Vector3>();
 
 
             //genero las posiciones de los centros que se requieran que se agreguen "a lo lejos"
 
-            foreach (Vector3 posicion in posiciones_centros)
+            foreach (tipo_posicion_con_index_heightmap posicion in posiciones_centros)
             {
                 //Esta forma de averiguar que puntos estan delante de la camara funciona, pero no resultó performante, por lo que se reemplazo la condicion del if
                 //if (esta_delante_del_plano(plano_vision, posicion))
-                if (dist_menor_a_n_width(proy_pos_actual, posicion, 9))
+                if (dist_menor_a_n_width(proy_pos_actual, posicion.posicion_centro, 9))
                 {
-                    if (dist_mayor_a_n_width(proy_pos_actual, posicion, 7))
+                    if (dist_mayor_a_n_width(proy_pos_actual, posicion.posicion_centro, 7))
                     {
-                        a_revisar_para_generar.Add(posicion);
+                        a_revisar_para_generar.Add(posicion.posicion_centro);
                     }
                 }
                 else
                 {
-                    a_borrar.Add(posicion);
+                    centros_terreno_a_borrar.Add(posicion);
                 }
 
             }
 
 
             //Borrado de centros de terreno alejados
-            foreach (Vector3 posicion_a_borrar in a_borrar)
+            foreach (tipo_posicion_con_index_heightmap posicion_a_borrar in centros_terreno_a_borrar)
             {
                 posiciones_centros.Remove(posicion_a_borrar);
             }
 
 
-            a_borrar.Clear();
+            centros_terreno_a_borrar.Clear();
 
             //Generacion de nuevos centros de terreno. Esta accion tambien generara un nuevo centro de nube de forma random..
             foreach (Vector3 posicion_a_revisar in a_revisar_para_generar)
@@ -814,18 +902,21 @@ namespace AlumnoEjemplos.Jet_Pilot
            centros_terrains_colisionables.Clear();
 
             //Renderizado de terreno
-            foreach (Vector3 posicion in posiciones_centros)
+           foreach (tipo_posicion_con_index_heightmap posicion in posiciones_centros)
             {
-                if (dist_menor_a_n_width(proy_pos_actual, posicion, 2))
+                if (dist_menor_a_n_width(proy_pos_actual, posicion.posicion_centro, 4))
                 {
-                    terrain_hq.render(posicion);
+                    mq_terrains[posicion.index].render(posicion.posicion_centro);
+                    //terrain_mq.render(posicion);
 
-                   centros_terrains_colisionables.Add(posicion);
+                    centros_terrains_colisionables.Add(posicion.posicion_centro);
                     //terrain_hq.render();
                 }
                 else
                 {
-                    if (dist_menor_a_n_width(proy_pos_actual, posicion, 4))
+                    lq_terrains[posicion.index].render(posicion.posicion_centro);
+                    //terrain_lq.render(posicion);
+                  /*  if (dist_menor_a_n_width(proy_pos_actual, posicion, 4))
                     {
                         terrain_mq.render(posicion);
                         //terrain_mq.render();
@@ -834,7 +925,7 @@ namespace AlumnoEjemplos.Jet_Pilot
                     {
                         terrain_lq.render(posicion);
                         //terrain_lq.render();
-                    }
+                    }*/
 
                 }
             }
@@ -842,9 +933,13 @@ namespace AlumnoEjemplos.Jet_Pilot
 
         public void closeTerrain()
         {
-            terrain_hq.dispose();
+            hq_terrains.Clear();
+            mq_terrains.Clear();
+            lq_terrains.Clear();
+
+/*            terrain_hq.dispose();
             terrain_mq.dispose();
-            terrain_lq.dispose();
+            terrain_lq.dispose();*/
             terreno_inicializado = false;
         }
 
@@ -1030,7 +1125,7 @@ namespace AlumnoEjemplos.Jet_Pilot
         private void initColisionador()
         {
             centros_terrains_colisionables = new List<Vector3>();
-            colisionador = new Colisionador(terrain_hq, width, currentScaleY);
+            colisionador = new Colisionador(hq_terrains[0], width, currentScaleY);
         }
 
         private void updateColision()
