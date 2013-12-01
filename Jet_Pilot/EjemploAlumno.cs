@@ -772,15 +772,17 @@ namespace AlumnoEjemplos.Jet_Pilot
             proy_pos_actual = pos_actual;
             proy_pos_actual.Y = 0;
 
-            List<tipo_posicion_con_index_heightmap> centros_terreno_a_borrar = new List<tipo_posicion_con_index_heightmap>();
+            List<tipo_posicion_con_index_heightmap> centros_terreno_aux = new List<tipo_posicion_con_index_heightmap>();
             List<Vector3> a_revisar_para_generar = new List<Vector3>();
-            List<Vector3> a_borrar = new List<Vector3>();
+            List<Vector3> aux = new List<Vector3>();
 
 
             //genero las posiciones de los centros que se requieran que se agreguen "a lo lejos"
 
-            foreach (tipo_posicion_con_index_heightmap posicion in posiciones_centros)
+            for(int i = 0; i < posiciones_centros.Count; i++)
+            //foreach (tipo_posicion_con_index_heightmap posicion in posiciones_centros)
             {
+                tipo_posicion_con_index_heightmap posicion = posiciones_centros[i];
                 //Esta forma de averiguar que puntos estan delante de la camara funciona, pero no resultó performante, por lo que se reemplazo la condicion del if
                 //if (esta_delante_del_plano(plano_vision, posicion))
                 if (dist_menor_a_n_width(proy_pos_actual, posicion.posicion_centro, 9))
@@ -789,23 +791,21 @@ namespace AlumnoEjemplos.Jet_Pilot
                     {
                         a_revisar_para_generar.Add(posicion.posicion_centro);
                     }
+                    centros_terreno_aux.Add(posicion);
                 }
-                else
-                {
-                    centros_terreno_a_borrar.Add(posicion);
-                }
-
             }
 
-
+            //piso los centros qeu ya estaban, con el array que tiene los que quedan
+            posiciones_centros = centros_terreno_aux;
+            /*
             //Borrado de centros de terreno alejados
-            foreach (tipo_posicion_con_index_heightmap posicion_a_borrar in centros_terreno_a_borrar)
+            foreach (int posicion_a_borrar in centros_terreno_a_borrar)
             {
                 posiciones_centros.Remove(posicion_a_borrar);
-            }
+            }*/
 
 
-            centros_terreno_a_borrar.Clear();
+            //centros_terreno_a_borrar.Clear();
 
             //Generacion de nuevos centros de terreno. Esta accion tambien generara un nuevo centro de nube de forma random..
             foreach (Vector3 posicion_a_revisar in a_revisar_para_generar)
@@ -820,18 +820,19 @@ namespace AlumnoEjemplos.Jet_Pilot
                 proyeccion_posicion_nube.X = posicion.X;
                 proyeccion_posicion_nube.Y = 0;
                 proyeccion_posicion_nube.Z = posicion.Z;
-                if (dist_mayor_a_n_width(proy_pos_actual, proyeccion_posicion_nube, 10))
+                if (!dist_mayor_a_n_width(proy_pos_actual, proyeccion_posicion_nube, 10))
                 {
-                    a_borrar.Add(posicion);
+                    aux.Add(posicion);
                 }
 
             }
-
-            foreach (Vector3 posicion_a_borrar in a_borrar)
+            posiciones_centros_nubes = aux;
+            /*
+            foreach (Vector3 posicion_a_borrar in aux)
             {
                 posiciones_centros_nubes.Remove(posicion_a_borrar);
             }
-
+            */
             ultimo_centro_de_posiciones_centros = 0;
             avance_random = 0;
 

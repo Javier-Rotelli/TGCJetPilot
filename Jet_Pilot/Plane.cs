@@ -254,8 +254,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             device.SetRenderTarget(0, pSurf);
             // hago lo mismo con el depthbuffer, necesito el que no tiene multisampling
             Surface pOldDS = device.DepthStencilSurface;
-            // Probar de comentar esta linea, para ver como se produce el fallo en el ztest
-            // por no soportar usualmente el multisampling en el render to texture.
+
             device.DepthStencilSurface = g_pDepthStencil;
 
             device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1.0f, 0);
