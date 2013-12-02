@@ -80,6 +80,7 @@ namespace AlumnoEjemplos.Jet_Pilot
         }
         
         List<tipo_posicion_con_index_heightmap> posiciones_centros;
+        List<tipo_posicion_con_index_heightmap> posiciones_centros_iniciales;
 
         string currentHeightmap_hq, currentHeightmap_mq, currentHeightmap_lq;
         string current_sea_texture, current_sea_to_sand_texture, current_sand_texture, current_sand_to_terrain_texture, current_terrain_texture;
@@ -216,13 +217,13 @@ namespace AlumnoEjemplos.Jet_Pilot
                 }
                 else
                 {
-
                     renderTerrainAndClouds(elapsedTime);
-
                     renderPlane(elapsedTime);
                     updateColision();
                     renderSkybox(elapsedTime);
+                    
 
+                
                     if (sound.getStatus() != TgcMp3Player.States.Playing && motor.getStatus() != TgcMp3Player.States.Playing)
                     {
                         sound.closeFile();
@@ -293,6 +294,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             //posiciones_centros.Clear();
             //initTerrainAndClouds();
             //meshes.Clear();
+            posiciones_centros = posiciones_centros_iniciales;
             initSkybox();
         }
 
@@ -304,7 +306,7 @@ namespace AlumnoEjemplos.Jet_Pilot
         {
 
             Msj_Choque = new TgcText2d();
-            Msj_Choque.Text = "Guarda con el terreno capo!!";
+            Msj_Choque.Text = "Cuidado con el terreno!!";
             Msj_Choque.Position = new Point((int)player.GetPosition().X, altoPantalla / 3);
             Msj_Choque.Color = Color.DarkRed;
             Msj_Choque.changeFont(new System.Drawing.Font("Cataclysmic", 30.0f));
@@ -666,6 +668,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             Vector3 nuevo_punto;
             float inner_width = width;
             posiciones_centros = new List<tipo_posicion_con_index_heightmap>();
+            posiciones_centros_iniciales = new List<tipo_posicion_con_index_heightmap>();
             posiciones_centros_nubes = new List<Vector3>();
 
             pos_original.X = pos_original.X - (width * 9);
@@ -678,6 +681,7 @@ namespace AlumnoEjemplos.Jet_Pilot
                 nuevo_centro.posicion_centro = nuevo_punto;
                 nuevo_centro.cargar_index(width);
                 posiciones_centros.Add(nuevo_centro);
+                posiciones_centros_iniciales.Add(nuevo_centro);
                 analisis_agregado_a_centros_nube(nuevo_punto);
                 
 
@@ -692,6 +696,7 @@ namespace AlumnoEjemplos.Jet_Pilot
                     nuevo_centro.posicion_centro = nuevo_punto;
                     nuevo_centro.cargar_index(width);
                     posiciones_centros.Add(nuevo_centro);
+                    posiciones_centros_iniciales.Add(nuevo_centro);
                     analisis_agregado_a_centros_nube(nuevo_punto);
 
                     nuevo_punto = new Vector3();
@@ -701,6 +706,7 @@ namespace AlumnoEjemplos.Jet_Pilot
                     nuevo_centro.posicion_centro = nuevo_punto;
                     nuevo_centro.cargar_index(width);
                     posiciones_centros.Add(nuevo_centro);
+                    posiciones_centros_iniciales.Add(nuevo_centro);
                     analisis_agregado_a_centros_nube(nuevo_punto);
 
                     inner_width = inner_width + width;
@@ -708,6 +714,10 @@ namespace AlumnoEjemplos.Jet_Pilot
                 inner_width = width;
                 pos_original.X = pos_original.X + width;
             }
+
+            //foreach(tipo_posicion_con_index_heightmap posicion in posiciones_centros){
+            //    posiciones_centros_iniciales.Add(posicion);
+            //}
 
             terreno_inicializado = true;
 
@@ -827,6 +837,7 @@ namespace AlumnoEjemplos.Jet_Pilot
 
             }
             posiciones_centros_nubes = aux;
+            
             /*
             foreach (Vector3 posicion_a_borrar in aux)
             {
@@ -900,7 +911,8 @@ namespace AlumnoEjemplos.Jet_Pilot
             //d3dDevice.EndScene();
 
             //renderizo terrenos de alta, media y baja calidad de acuerdo a la distancia a la que se encuentren de la proyeccion de la camara en el plano xz
-           centros_terrains_colisionables.Clear();
+
+            List<Vector3> centros_terrains_colisionables_aux = new List<Vector3>();
 
             //Renderizado de terreno
            foreach (tipo_posicion_con_index_heightmap posicion in posiciones_centros)
@@ -910,7 +922,7 @@ namespace AlumnoEjemplos.Jet_Pilot
                     mq_terrains[posicion.index].render(posicion.posicion_centro);
                     //terrain_mq.render(posicion);
 
-                    centros_terrains_colisionables.Add(posicion.posicion_centro);
+                    centros_terrains_colisionables_aux.Add(posicion.posicion_centro);
                     //terrain_hq.render();
                 }
                 else
@@ -930,6 +942,12 @@ namespace AlumnoEjemplos.Jet_Pilot
 
                 }
             }
+
+           if (centros_terrains_colisionables_aux.Count != 0) {
+               centros_terrains_colisionables.Clear();
+               centros_terrains_colisionables = centros_terrains_colisionables_aux;              
+           }
+
         }
 
         public void closeTerrain()
