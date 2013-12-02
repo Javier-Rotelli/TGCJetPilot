@@ -290,8 +290,8 @@ namespace AlumnoEjemplos.Jet_Pilot
         private void reset()
         {
             initPlane();
-            posiciones_centros.Clear();
-            initTerrainAndClouds();
+            //posiciones_centros.Clear();
+            //initTerrainAndClouds();
             //meshes.Clear();
             initSkybox();
         }
