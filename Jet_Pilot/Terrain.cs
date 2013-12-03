@@ -253,7 +253,7 @@ namespace AlumnoEjemplos.Jet_Pilot
 
             Matrix traslacion = new Matrix();
             traslacion.Translate(desplazamiento.X, desplazamiento.Y, desplazamiento.Z);
-
+            
             //GuiController.Instance.Shaders.setShaderMatrix(this.effect, Matrix.Identity); 
             GuiController.Instance.Shaders.setShaderMatrix(this.effect, traslacion);
             d3dDevice.VertexDeclaration = GuiController.Instance.Shaders.VdecPositionTextured;

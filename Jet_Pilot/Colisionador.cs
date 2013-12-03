@@ -46,7 +46,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             }
             objeto.setRenderColor(Color.Red);
             centros_probables.Clear();
-            if (objeto.Position.Y < 500) { return true; } //Si el avion avanza demasiado rápido  y no se llega a checkear la colisión
+            if (objeto.Position.Y < 0) { return true; } //Si el avion avanza demasiado rápido  y no se llega a checkear la colisión
             foreach (Vector3 centro in centros)
             {
 

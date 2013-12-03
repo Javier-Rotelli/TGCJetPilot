@@ -318,7 +318,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             Msj_Triunfo.changeFont(new System.Drawing.Font("Cataclysmic", 30.0f));
 
             Msj_Advertencia = new TgcText2d();
-            Msj_Advertencia.Text = "No vayas tan alto, tu techo de vuelo es de 20.000 m!";
+            Msj_Advertencia.Text = "No vayas tan alto, tu techo de vuelo es de 18.000 m!";
             Msj_Advertencia.Position = new Point((int)player.GetPosition().X, altoPantalla / 3);
             Msj_Advertencia.Color = Color.DarkRed;
             Msj_Advertencia.changeFont(new System.Drawing.Font("Cataclysmic", 30.0f));
@@ -558,7 +558,7 @@ namespace AlumnoEjemplos.Jet_Pilot
                     _1_.Y = nuevo_centro.Y + generador.Next(45000) + 6000;
                     posiciones_centros_nubes.Add(_1_);
                 }
-                avance_random = Convert.ToInt32(generador.Next(10)) + 70;
+                avance_random = Convert.ToInt32(generador.Next(10)) + 80;
             }
             else
             {
@@ -600,12 +600,12 @@ namespace AlumnoEjemplos.Jet_Pilot
 
 
             //Escala del mapa
-            ScaleXZ_hq = 160f;
+            ScaleXZ_hq = 300f;
             ScaleXZ_mq = (ScaleXZ_hq * 2) + 0.7f;
-            ScaleXZ_lq = (ScaleXZ_mq * 2) + 5f;
+            ScaleXZ_lq = (ScaleXZ_mq * 2) + 70f;
 
 
-            currentScaleY = 3f;
+            currentScaleY = 5f;
 
 
             //Path de Textura default del terreno y Modifier para cambiarla
@@ -641,7 +641,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             Bitmap bitmap_lq = (Bitmap)Bitmap.FromFile(currentHeightmap_lq);
 
             //Este es el ancho de referencia gral
-            width = ((bitmap_hq.Size.Width * ScaleXZ_hq) - 370);
+            width = ((bitmap_hq.Size.Width * ScaleXZ_hq) - 650);
 
             //No se van a renderizar mas de 5 terrenos"hacia adelante". Se utiliza para hallar intersecciones con el plano
             //valor_grande = 5 * width;
@@ -663,7 +663,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             //Seteo el primer valor random que se va a considerar como contador general..
             avance_random = Convert.ToInt32(generador.Next(5)) + 10;
 
-
+            
             //Generar lista de posiciones de centros de terreno inicial
             Vector3 nuevo_punto;
             float inner_width = width;
@@ -671,8 +671,8 @@ namespace AlumnoEjemplos.Jet_Pilot
             posiciones_centros_iniciales = new List<tipo_posicion_con_index_heightmap>();
             posiciones_centros_nubes = new List<Vector3>();
 
-            pos_original.X = pos_original.X - (width * 9);
-            for (int i = 0; i < 18; i++)
+            pos_original.X = pos_original.X - (width * 10);
+            for (int i = 0; i < 20; i++)
             {
 
                 nuevo_punto = new Vector3();
@@ -686,7 +686,7 @@ namespace AlumnoEjemplos.Jet_Pilot
                 
 
 
-                for (int j = 0; j < 9; j++)
+                for (int j = 0; j < 20; j++)
                 {
 
                     nuevo_punto = new Vector3();
@@ -914,20 +914,23 @@ namespace AlumnoEjemplos.Jet_Pilot
 
             List<Vector3> centros_terrains_colisionables_aux = new List<Vector3>();
 
+            Vector3 ajuste_altura_posicion_centros = new Vector3(0,-1000,0);
+            
+
             //Renderizado de terreno
            foreach (tipo_posicion_con_index_heightmap posicion in posiciones_centros)
             {
-                if (dist_menor_a_n_width(proy_pos_actual, posicion.posicion_centro, 4))
+                if (dist_menor_a_n_width(proy_pos_actual, posicion.posicion_centro, 7))
                 {
-                    mq_terrains[posicion.index].render(posicion.posicion_centro);
+                    mq_terrains[posicion.index].render(posicion.posicion_centro + ajuste_altura_posicion_centros);
                     //terrain_mq.render(posicion);
 
-                    centros_terrains_colisionables_aux.Add(posicion.posicion_centro);
+                    centros_terrains_colisionables_aux.Add(posicion.posicion_centro + ajuste_altura_posicion_centros);
                     //terrain_hq.render();
                 }
                 else
                 {
-                    lq_terrains[posicion.index].render(posicion.posicion_centro);
+                    lq_terrains[posicion.index].render(posicion.posicion_centro+ajuste_altura_posicion_centros);
                     //terrain_lq.render(posicion);
                   /*  if (dist_menor_a_n_width(proy_pos_actual, posicion, 4))
                     {
@@ -1114,10 +1117,10 @@ namespace AlumnoEjemplos.Jet_Pilot
             cam.SetCenterTargetUp(camera, target, y, true);
             cam.updateViewMatrix(d3dDevice);
 
-            if (player.GetPosition().Y >= 18000) {
+            if (player.GetPosition().Y >= 16000) {
                 mostrar_msj_advertencia = true;
                 hora_advertencia = DateTime.Now;
-                if (player.GetPosition().Y >= 20000) {
+                if (player.GetPosition().Y >= 18000) {
                     motor.stop();
                     motor.closeFile();
                     sound = GuiController.Instance.Mp3Player;
@@ -1180,7 +1183,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             skyBox2 = new Skybox();
 
             //Agrandamos la distancia del Far Plane para tener un skybox mas grande y que gracias a esto se dibuja y se ve
-            d3dDevice.Transform.Projection = Matrix.PerspectiveFovLH(FastMath.ToRad(45.0f), 16 / 9, 10.0f, 50000.0f);
+            d3dDevice.Transform.Projection = Matrix.PerspectiveFovLH(FastMath.ToRad(45.0f), 16 / 9, 10.0f, 500000.0f);
 
             ///////////////MODIFIERS//////////////////
 

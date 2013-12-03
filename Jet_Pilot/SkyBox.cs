@@ -21,7 +21,7 @@ namespace AlumnoEjemplos.Jet_Pilot
         TgcPlaneWall ft;
         TgcPlaneWall bk;
 
-        private float size = 49000.0f;
+        private float size = 250000.0f;
 
         public Skybox()
         {
