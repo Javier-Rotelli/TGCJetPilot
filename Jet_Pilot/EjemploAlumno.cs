@@ -318,7 +318,7 @@ namespace AlumnoEjemplos.Jet_Pilot
             Msj_Triunfo.changeFont(new System.Drawing.Font("Cataclysmic", 30.0f));
 
             Msj_Advertencia = new TgcText2d();
-            Msj_Advertencia.Text = "No vayas tan alto, tu techo de vuelo es de 18.000 m!";
+            Msj_Advertencia.Text = "No vayas tan alto, tu techo de vuelo es de 20.000 m!";
             Msj_Advertencia.Position = new Point((int)player.GetPosition().X, altoPantalla / 3);
             Msj_Advertencia.Color = Color.DarkRed;
             Msj_Advertencia.changeFont(new System.Drawing.Font("Cataclysmic", 30.0f));
@@ -1117,10 +1117,10 @@ namespace AlumnoEjemplos.Jet_Pilot
             cam.SetCenterTargetUp(camera, target, y, true);
             cam.updateViewMatrix(d3dDevice);
 
-            if (player.GetPosition().Y >= 16000) {
+            if (player.GetPosition().Y >= 18000) {
                 mostrar_msj_advertencia = true;
                 hora_advertencia = DateTime.Now;
-                if (player.GetPosition().Y >= 18000) {
+                if (player.GetPosition().Y >= 20000) {
                     motor.stop();
                     motor.closeFile();
                     sound = GuiController.Instance.Mp3Player;
